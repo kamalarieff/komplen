@@ -17,6 +17,7 @@ defmodule KomplenWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    resources "/complaints", ComplaintController
   end
 
   # Other scopes may use custom stacks.

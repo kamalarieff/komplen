@@ -1,0 +1,18 @@
+<h1>Show Complaint</h1>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @complaint.title %>
+  </li>
+
+  <li>
+    <strong>Body:</strong>
+    <%= @complaint.body %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.complaint_path(@conn, :edit, @complaint) %></span>
+<span><%= link "Back", to: Routes.complaint_path(@conn, :index) %></span>

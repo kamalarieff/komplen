@@ -1,0 +1,28 @@
+<h1>Listing Complaints</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Body</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for complaint <- @complaints do %>
+    <tr>
+      <td><%= complaint.title %></td>
+      <td><%= complaint.body %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.complaint_path(@conn, :show, complaint) %></span>
+        <span><%= link "Edit", to: Routes.complaint_path(@conn, :edit, complaint) %></span>
+        <span><%= link "Delete", to: Routes.complaint_path(@conn, :delete, complaint), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Complaint", to: Routes.complaint_path(@conn, :new) %></span>
