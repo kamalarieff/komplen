@@ -19,6 +19,7 @@ defmodule KomplenWeb.Router do
     get "/", PageController, :index
     resources "/complaints", ComplaintController
     resources "/users", UserController
+    resources "/admins", AdminController
   end
 
   # Other scopes may use custom stacks.
