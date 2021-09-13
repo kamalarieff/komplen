@@ -3,7 +3,7 @@ use Mix.Config
 # Configure your database
 config :komplen, Komplen.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "mysecretpassword",
   database: "komplen_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
