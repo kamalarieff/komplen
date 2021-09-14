@@ -3,11 +3,9 @@ defmodule Komplen.Repo.Migrations.CreateAdmins do
 
   def change do
     create table(:admins) do
-      add :admin_id, references(:users, on_delete: :nothing)
+      add :user_id, references(:users, [on_delete: :nothing, validate: true])
 
       timestamps()
     end
-
-    create index(:admins, [:admin_id])
   end
 end

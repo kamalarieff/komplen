@@ -7,6 +7,7 @@ defmodule Komplen.Accounts do
   alias Komplen.Repo
 
   alias Komplen.Accounts.User
+  alias Komplen.Accounts
 
   @doc """
   Returns the list of users.
@@ -138,15 +139,17 @@ defmodule Komplen.Accounts do
 
   ## Examples
 
-      iex> create_admin(%{field: value})
+      iex> create_admin(%Account.User{}, %{field: value})
       {:ok, %Admin{}}
 
-      iex> create_admin(%{field: bad_value})
+      iex> create_admin(%Account.User{}, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_admin(attrs \\ %{}) do
+  def create_admin(%Accounts.User{} = user, attrs \\ %{}) do
     %Admin{}
+    |> Ecto.Changeset.change
+    |> Ecto.Changeset.put_change(:user_id, user.id)
     |> Admin.changeset(attrs)
     |> Repo.insert()
   end

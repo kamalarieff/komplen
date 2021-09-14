@@ -2,9 +2,12 @@ defmodule Komplen.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Komplen.Accounts.Admin
+
   schema "users" do
     field :name, :string
     field :username, :string
+    has_one :admin, Admin
 
     timestamps()
   end

@@ -65,8 +65,9 @@ defmodule Komplen.AccountsTest do
   end
 
   describe "admins" do
-    alias Komplen.Accounts.Admin
+    alias Komplen.Accounts.{User,Admin}
 
+    @valid_user_attrs %{name: "some name", username: "some username"}
     @valid_attrs %{}
     @update_attrs %{}
     @invalid_attrs %{}
@@ -90,8 +91,17 @@ defmodule Komplen.AccountsTest do
       assert Accounts.get_admin!(admin.id) == admin
     end
 
-    test "create_admin/1 with valid data creates a admin" do
-      assert {:ok, %Admin{} = admin} = Accounts.create_admin(@valid_attrs)
+    @tag individual_test: "yup"
+    test "create_admin/1 with valid user data creates a admin" do
+      assert {:ok, %User{} = user} = Accounts.create_user(@valid_user_attrs)
+      assert {:ok, %Admin{} = admin} = Accounts.create_admin(user, @valid_attrs)
+      IO.inspect(user)
+      IO.inspect(admin)
+    end
+
+    @tag individual_test: "yup"
+    test "create_admin/1 with invalid user data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(%User{}, @valid_attrs)
     end
 
     test "create_admin/1 with invalid data returns error changeset" do
