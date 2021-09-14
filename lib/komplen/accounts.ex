@@ -147,9 +147,7 @@ defmodule Komplen.Accounts do
 
   """
   def create_admin(%Accounts.User{} = user, attrs \\ %{}) do
-    %Admin{}
-    |> Ecto.Changeset.change
-    |> Ecto.Changeset.put_change(:user_id, user.id)
+    %Admin{user_id: user.id}
     |> Admin.changeset(attrs)
     |> Repo.insert()
   end
