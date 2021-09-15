@@ -115,7 +115,9 @@ defmodule Komplen.Accounts do
 
   """
   def list_admins do
-    Repo.all(Admin)
+    Admin
+    |> Repo.all()
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -132,7 +134,11 @@ defmodule Komplen.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_admin!(id), do: Repo.get!(Admin, id)
+  def get_admin!(id) do
+    Admin
+    |> Repo.get!(id)
+    |> Repo.preload(:user)
+  end
 
   @doc """
   Creates a admin.

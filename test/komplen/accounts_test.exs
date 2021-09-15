@@ -73,12 +73,11 @@ defmodule Komplen.AccountsTest do
     @invalid_attrs %{}
 
     def admin_fixture(attrs \\ %{}) do
-      {:ok, admin} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Accounts.create_admin()
-
-      admin
+      {:ok, %User{} = user} = Accounts.create_user(@valid_user_attrs)
+      {:ok, admin} = Accounts.create_admin(user, attrs)
+      Admin
+      |> Repo.get!(admin.id)
+      |> Repo.preload(:user)
     end
 
     test "list_admins/0 returns all admins" do
