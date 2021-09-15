@@ -14,8 +14,9 @@ defmodule KomplenWeb.AdminController do
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"admin" => admin_params}) do
-    case Accounts.create_admin(admin_params) do
+  def create(conn, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+    case Accounts.create_admin(user) do
       {:ok, admin} ->
         conn
         |> put_flash(:info, "Admin created successfully.")

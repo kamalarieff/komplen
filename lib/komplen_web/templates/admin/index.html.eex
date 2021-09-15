@@ -3,18 +3,18 @@
 <table>
   <thead>
     <tr>
-
-      <th></th>
+      <th>Name</th>
+      <th>Username</th>
     </tr>
   </thead>
   <tbody>
 <%= for admin <- @admins do %>
     <tr>
+      <th><%= admin.user.name %></th>
+      <th><%= admin.user.username %></th>
 
       <td>
-        <span><%= link "Show", to: Routes.admin_path(@conn, :show, admin) %></span>
-        <span><%= link "Edit", to: Routes.admin_path(@conn, :edit, admin) %></span>
-        <span><%= link "Delete", to: Routes.admin_path(@conn, :delete, admin), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span><%= link "Revoke admin", to: Routes.admin_path(@conn, :delete, admin), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
 <% end %>

@@ -3,6 +3,7 @@
 <table>
   <thead>
     <tr>
+      <th>ID</th>
       <th>Name</th>
       <th>Username</th>
 
@@ -12,6 +13,7 @@
   <tbody>
 <%= for user <- @users do %>
     <tr>
+      <td><%= user.id %></td>
       <td><%= user.name %></td>
       <td><%= user.username %></td>
 
@@ -19,6 +21,7 @@
         <span><%= link "Show", to: Routes.user_path(@conn, :show, user) %></span>
         <span><%= link "Edit", to: Routes.user_path(@conn, :edit, user) %></span>
         <span><%= link "Delete", to: Routes.user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span><%= link "Make Admin", to: Routes.admin_path(@conn, :create, %{id: user.id}), method: :post, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
 <% end %>
