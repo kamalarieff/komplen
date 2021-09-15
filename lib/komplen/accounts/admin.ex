@@ -15,6 +15,7 @@ defmodule Komplen.Accounts.Admin do
     admin
     |> cast(attrs, [])
     |> validate_required([:user_id])
+    |> unique_constraint([:user_id])
     |> Ecto.Changeset.assoc_constraint(:user)
   end
 end

@@ -103,6 +103,12 @@ defmodule Komplen.AccountsTest do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(%User{}, @valid_attrs)
     end
 
+    test "create_admin/1 with duplicate user data returns error changeset" do
+      assert {:ok, %User{} = user} = Accounts.create_user(@valid_user_attrs)
+      assert {:ok, %Admin{} = _admin} = Accounts.create_admin(user, @valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(user, @valid_attrs)
+    end
+
     test "create_admin/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(@invalid_attrs)
     end
