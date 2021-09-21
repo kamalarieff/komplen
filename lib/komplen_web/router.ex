@@ -20,6 +20,7 @@ defmodule KomplenWeb.Router do
     resources "/complaints", ComplaintController
     resources "/users", UserController
     resources "/admins", AdminController
+    resources "/sessions", SessionController, only: [:new, :create, :delete], singleton: true
   end
 
   # Other scopes may use custom stacks.

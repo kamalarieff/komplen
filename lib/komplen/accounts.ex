@@ -204,4 +204,27 @@ defmodule Komplen.Accounts do
   def change_admin(%Admin{} = admin, attrs \\ %{}) do
     Admin.changeset(admin, attrs)
   end
+
+  @doc """
+  Authenticate by name.
+
+  ## Examples
+
+      iex> authenticate_by_name("value")
+      {:ok, %User{}}
+
+      iex> authenticate_by_name("bad value")
+      {:error, :unauthorized}
+
+  """
+  def authenticate_by_name(name) do
+    query =
+      from u in User,
+      where: u.name == ^name
+
+    case Repo.one(query) do
+      %User{} = user -> {:ok, user}
+      nil -> {:error, :unauthorized}
+    end
+  end
 end
