@@ -1,15 +1,23 @@
 defmodule KomplenWeb.ComplaintControllerTest do
   use KomplenWeb.ConnCase
 
-  alias Komplen.Complaints
+  alias Komplen.{Accounts, Complaints}
 
+  @create_user_attrs %{name: "some name", username: "some username"}
   @create_attrs %{body: "some body", title: "some title"}
   @update_attrs %{body: "some updated body", title: "some updated title"}
   @invalid_attrs %{body: nil, title: nil}
 
+  @moduletag :complaint
+
   def fixture(:complaint) do
     {:ok, complaint} = Complaints.create_complaint(@create_attrs)
     complaint
+  end
+
+  def fixture(:user) do
+    {:ok, user} = Accounts.create_user(@create_user_attrs)
+    user
   end
 
   describe "index" do
@@ -20,9 +28,20 @@ defmodule KomplenWeb.ComplaintControllerTest do
   end
 
   describe "new complaint" do
+    setup [:create_user]
+
     test "renders form", %{conn: conn} do
-      conn = get(conn, Routes.complaint_path(conn, :new))
+      conn =
+        conn
+        |> init_test_session(@create_user_attrs)
+        |> get(Routes.complaint_path(conn, :new))
+
       assert html_response(conn, 200) =~ "New Complaint"
+    end
+
+    test "redirects to login page when there is no user", %{conn: conn} do
+      conn = get(conn, Routes.complaint_path(conn, :new))
+      assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
   end
 
@@ -75,6 +94,7 @@ defmodule KomplenWeb.ComplaintControllerTest do
     test "deletes chosen complaint", %{conn: conn, complaint: complaint} do
       conn = delete(conn, Routes.complaint_path(conn, :delete, complaint))
       assert redirected_to(conn) == Routes.complaint_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.complaint_path(conn, :show, complaint))
       end
@@ -84,5 +104,10 @@ defmodule KomplenWeb.ComplaintControllerTest do
   defp create_complaint(_) do
     complaint = fixture(:complaint)
     %{complaint: complaint}
+  end
+
+  defp create_user(_) do
+    user = fixture(:user)
+    %{user: user}
   end
 end

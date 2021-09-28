@@ -217,6 +217,10 @@ defmodule Komplen.Accounts do
       {:error, :unauthorized}
 
   """
+  def authenticate_by_name(name) when is_nil(name) do
+    {:error, :missing_name}
+  end
+
   def authenticate_by_name(name) do
     query =
       from u in User,

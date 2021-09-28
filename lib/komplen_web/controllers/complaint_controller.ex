@@ -1,6 +1,7 @@
 defmodule KomplenWeb.ComplaintController do
   use KomplenWeb, :controller
 
+  alias Komplen.Accounts
   alias Komplen.Complaints
   alias Komplen.Complaints.Complaint
 
@@ -10,8 +11,20 @@ defmodule KomplenWeb.ComplaintController do
   end
 
   def new(conn, _params) do
-    changeset = Complaints.change_complaint(%Complaint{})
-    render(conn, "new.html", changeset: changeset)
+    name =
+      conn
+      |> get_session("name")
+
+    case Accounts.authenticate_by_name(name) do
+      {:ok, _} ->
+        changeset = Complaints.change_complaint(%Complaint{})
+        render(conn, "new.html", changeset: changeset)
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Unauthorized")
+        |> redirect(to: Routes.session_path(conn, :new))
+    end
   end
 
   def create(conn, %{"complaint" => complaint_params}) do

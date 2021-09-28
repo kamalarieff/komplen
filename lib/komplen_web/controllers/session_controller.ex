@@ -13,6 +13,7 @@ defmodule KomplenWeb.SessionController do
         conn
         |> put_flash(:info, "Welcome #{name}")
         |> put_session(:user_id, user.id)
+        |> put_session(:name, user.name)
         |> configure_session(renew: true)
         |> redirect(to: "/")
 
