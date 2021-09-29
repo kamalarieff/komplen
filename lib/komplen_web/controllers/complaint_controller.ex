@@ -11,11 +11,11 @@ defmodule KomplenWeb.ComplaintController do
   end
 
   def new(conn, _params) do
-    name =
+    user_id =
       conn
-      |> get_session("name")
+      |> get_session("user_id")
 
-    case Accounts.authenticate_by_name(name) do
+    case Accounts.authenticate_by_id(user_id) do
       {:ok, _} ->
         changeset = Complaints.change_complaint(%Complaint{})
         render(conn, "new.html", changeset: changeset)

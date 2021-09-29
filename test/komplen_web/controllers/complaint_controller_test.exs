@@ -30,10 +30,10 @@ defmodule KomplenWeb.ComplaintControllerTest do
   describe "new complaint" do
     setup [:create_user]
 
-    test "renders form", %{conn: conn} do
+    test "renders form", %{conn: conn, user: user} do
       conn =
         conn
-        |> init_test_session(@create_user_attrs)
+        |> init_test_session(user_id: user.id)
         |> get(Routes.complaint_path(conn, :new))
 
       assert html_response(conn, 200) =~ "New Complaint"
