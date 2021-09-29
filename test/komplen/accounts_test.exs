@@ -46,6 +46,25 @@ defmodule Komplen.AccountsTest do
       assert user.username == "some updated username"
     end
 
+    @tag individual_test: "yup"
+    test "authenticate_by_name/1 and authenticate_by_id/1 with valid data returns user" do
+      user = user_fixture()
+      assert {:ok, %User{} = user} = Accounts.authenticate_by_name("some name")
+      assert user.name == "some name"
+      assert user.username == "some username"
+      assert {:ok, %User{} = user} = Accounts.authenticate_by_id(user.id)
+    end
+
+    # this test can probably be deleted because it is testing for implementation details
+    test "authenticate_by_name/1 with invalid data returns error" do
+      assert {:error, :missing_name} = Accounts.authenticate_by_name(nil)
+    end
+
+    # this test can probably be deleted because it is testing for implementation details
+    test "authenticate_by_id/1 with invalid data returns error" do
+      assert {:error, :missing_id} = Accounts.authenticate_by_id(nil)
+    end
+
     test "update_user/2 with invalid data returns error changeset" do
       user = user_fixture()
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)

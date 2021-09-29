@@ -231,4 +231,31 @@ defmodule Komplen.Accounts do
       nil -> {:error, :unauthorized}
     end
   end
+
+  @doc """
+  Authenticate by id.
+
+  ## Examples
+
+      iex> authenticate_by_id("value")
+      {:ok, %User{}}
+
+      iex> authenticate_by_id("bad value")
+      {:error, :unauthorized}
+
+  """
+  def authenticate_by_id(id) when is_nil(id) do
+    {:error, :missing_id}
+  end
+
+  def authenticate_by_id(id) do
+    query =
+      from u in User,
+      where: u.id == ^id
+
+    case Repo.one(query) do
+      %User{} = user -> {:ok, user}
+      nil -> {:error, :unauthorized}
+    end
+  end
 end
