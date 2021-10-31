@@ -3,21 +3,34 @@ defmodule KomplenWeb.ComplaintControllerTest do
 
   alias Komplen.{Accounts, Complaints}
 
-  @create_user_attrs %{name: "some name", username: "some username"}
-  @create_attrs %{body: "some body", title: "some title"}
-  @update_attrs %{body: "some updated body", title: "some updated title"}
-  @invalid_attrs %{body: nil, title: nil}
+  @create_user_attrs %{"name" => "some name", "username" => "some username"}
+  @create_attrs %{"body" => "some body", "title" => "some title"}
+  @update_attrs %{"body" => "some updated body", "title" => "some updated title"}
+  @invalid_attrs %{"body" => nil, "title" => nil}
 
-  @moduletag :complaint
+  @moduletag :ComplaintController
 
   def fixture(:complaint) do
     {:ok, complaint} = Complaints.create_complaint(@create_attrs)
+
     complaint
   end
 
   def fixture(:user) do
     {:ok, user} = Accounts.create_user(@create_user_attrs)
     user
+  end
+
+  # we need to pass a user to create a complaint because it needs a user to create one
+  def fixture(:user_complaint) do
+    {:ok, user} = Accounts.create_user(@create_user_attrs)
+
+    {:ok, complaint} =
+      @create_attrs
+      |> Map.put("user", user)
+      |> Complaints.create_complaint()
+
+    {user, complaint}
   end
 
   describe "index" do
@@ -46,8 +59,13 @@ defmodule KomplenWeb.ComplaintControllerTest do
   end
 
   describe "create complaint" do
-    test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.complaint_path(conn, :create), complaint: @create_attrs)
+    setup [:create_user_complaint]
+
+    test "redirects to show when data is valid", %{conn: conn, user: user} do
+      conn =
+        conn
+        |> init_test_session(user_id: user.id)
+        |> post(Routes.complaint_path(conn, :create), complaint: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.complaint_path(conn, :show, id)
@@ -56,26 +74,42 @@ defmodule KomplenWeb.ComplaintControllerTest do
       assert html_response(conn, 200) =~ "Show Complaint"
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.complaint_path(conn, :create), complaint: @invalid_attrs)
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      conn =
+        conn
+        |> init_test_session(user_id: user.id)
+        |> post(Routes.complaint_path(conn, :create), complaint: @invalid_attrs)
+
       assert html_response(conn, 200) =~ "New Complaint"
     end
   end
 
   describe "edit complaint" do
-    setup [:create_complaint]
+    setup [:create_user_complaint]
 
-    test "renders form for editing chosen complaint", %{conn: conn, complaint: complaint} do
-      conn = get(conn, Routes.complaint_path(conn, :edit, complaint))
+    test "renders form for editing chosen complaint", %{
+      conn: conn,
+      user: user,
+      complaint: complaint
+    } do
+      conn =
+        conn
+        |> init_test_session(user_id: user.id)
+        |> get(Routes.complaint_path(conn, :edit, complaint))
+
       assert html_response(conn, 200) =~ "Edit Complaint"
     end
   end
 
   describe "update complaint" do
-    setup [:create_complaint]
+    setup [:create_user_complaint]
 
-    test "redirects when data is valid", %{conn: conn, complaint: complaint} do
-      conn = put(conn, Routes.complaint_path(conn, :update, complaint), complaint: @update_attrs)
+    test "redirects when data is valid", %{conn: conn, user: user, complaint: complaint} do
+      conn =
+        conn
+        |> init_test_session(user_id: user.id)
+        |> put(Routes.complaint_path(conn, :update, complaint), complaint: @update_attrs)
+
       assert redirected_to(conn) == Routes.complaint_path(conn, :show, complaint)
 
       conn = get(conn, Routes.complaint_path(conn, :show, complaint))
@@ -89,7 +123,7 @@ defmodule KomplenWeb.ComplaintControllerTest do
   end
 
   describe "delete complaint" do
-    setup [:create_complaint]
+    setup [:create_user_complaint]
 
     test "deletes chosen complaint", %{conn: conn, complaint: complaint} do
       conn = delete(conn, Routes.complaint_path(conn, :delete, complaint))
@@ -104,6 +138,11 @@ defmodule KomplenWeb.ComplaintControllerTest do
   defp create_complaint(_) do
     complaint = fixture(:complaint)
     %{complaint: complaint}
+  end
+
+  defp create_user_complaint(_) do
+    {user, complaint} = fixture(:user_complaint)
+    %{user: user, complaint: complaint}
   end
 
   defp create_user(_) do

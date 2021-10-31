@@ -28,7 +28,13 @@ defmodule KomplenWeb.ComplaintController do
   end
 
   def create(conn, %{"complaint" => complaint_params}) do
-    case Complaints.create_complaint(complaint_params) do
+    user_id =
+      conn
+      |> get_session("user_id")
+
+    user = Accounts.get_user!(user_id)
+
+    case Complaints.create_complaint(Map.put(complaint_params, "user", user)) do
       {:ok, complaint} ->
         conn
         |> put_flash(:info, "Complaint created successfully.")
@@ -44,12 +50,14 @@ defmodule KomplenWeb.ComplaintController do
     render(conn, "show.html", complaint: complaint)
   end
 
+  # TODO: need to check for user_id here
   def edit(conn, %{"id" => id}) do
     complaint = Complaints.get_complaint!(id)
     changeset = Complaints.change_complaint(complaint)
     render(conn, "edit.html", complaint: complaint, changeset: changeset)
   end
 
+  # TODO: need to check for user_id here
   def update(conn, %{"id" => id, "complaint" => complaint_params}) do
     complaint = Complaints.get_complaint!(id)
 

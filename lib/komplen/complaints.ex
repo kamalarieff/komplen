@@ -49,8 +49,19 @@ defmodule Komplen.Complaints do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_complaint(attrs \\ %{}) do
-    %Complaint{}
+  # Pattern matching in a function definition
+  # https://elixirforum.com/t/get-specific-key-and-the-rest-of-map-with-pattern-matching-in-elixir/14553/4
+  # Note that this is a different way to pass the user to the complaint changeset
+  # See the different way used in admin. admin accepts two params
+  # I still can't get the hang of pattern matching. Need more time to understand this
+  # The tests are the only one that is failing. Otherwise, it is perfect
+  # Maybe you can check out the Elixir in action book
+  # The code was sending the keys as strings but the test was sending it as atoms
+  # I think you can delete this default params because it doesn't make sense
+  def create_complaint(attrs = %{"user" => user} \\ %{}) do
+    # def create_complaint(attrs \\ %{}) do
+    # %Complaint{}
+    %Complaint{user_id: user.id}
     |> Complaint.changeset(attrs)
     |> Repo.insert()
   end
