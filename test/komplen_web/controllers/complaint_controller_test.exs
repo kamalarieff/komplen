@@ -118,20 +118,28 @@ defmodule KomplenWeb.ComplaintControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, complaint: complaint} do
       conn = put(conn, Routes.complaint_path(conn, :update, complaint), complaint: @invalid_attrs)
-      assert html_response(conn, 200) =~ "Edit Complaint"
+      assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
   end
 
   describe "delete complaint" do
     setup [:create_user_complaint]
 
-    test "deletes chosen complaint", %{conn: conn, complaint: complaint} do
-      conn = delete(conn, Routes.complaint_path(conn, :delete, complaint))
+    test "deletes chosen complaint when authenticated", %{conn: conn, user: user, complaint: complaint} do
+      conn =
+        conn
+        |> init_test_session(user_id: user.id)
+        |> delete(Routes.complaint_path(conn, :delete, complaint))
       assert redirected_to(conn) == Routes.complaint_path(conn, :index)
 
       assert_error_sent 404, fn ->
         get(conn, Routes.complaint_path(conn, :show, complaint))
       end
+    end
+
+    test "redirected when not authenticated", %{conn: conn, complaint: complaint} do
+      conn = delete(conn, Routes.complaint_path(conn, :delete, complaint))
+      assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
   end
 

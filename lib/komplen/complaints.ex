@@ -18,7 +18,9 @@ defmodule Komplen.Complaints do
 
   """
   def list_complaints do
-    Repo.all(Complaint)
+    Complaint
+    |> Repo.all()
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -35,7 +37,11 @@ defmodule Komplen.Complaints do
       ** (Ecto.NoResultsError)
 
   """
-  def get_complaint!(id), do: Repo.get!(Complaint, id)
+  def get_complaint!(id) do
+    Complaint
+    |> Repo.get!(id)
+    |> Repo.preload(:user)
+  end
 
   @doc """
   Creates a complaint.

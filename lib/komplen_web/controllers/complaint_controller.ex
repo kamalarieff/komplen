@@ -1,7 +1,6 @@
 defmodule KomplenWeb.ComplaintController do
   use KomplenWeb, :controller
 
-  alias Komplen.Accounts
   alias Komplen.Complaints
   alias Komplen.Complaints.Complaint
 
@@ -11,28 +10,14 @@ defmodule KomplenWeb.ComplaintController do
   end
 
   def new(conn, _params) do
-    user_id =
-      conn
-      |> get_session("user_id")
-
-    case Accounts.authenticate_by_id(user_id) do
-      {:ok, _} ->
-        changeset = Complaints.change_complaint(%Complaint{})
-        render(conn, "new.html", changeset: changeset)
-
-      {:error, _} ->
-        conn
-        |> put_flash(:error, "Unauthorized")
-        |> redirect(to: Routes.session_path(conn, :new))
-    end
+    changeset = Complaints.change_complaint(%Complaint{})
+    render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"complaint" => complaint_params}) do
-    user_id =
+    user =
       conn
-      |> get_session("user_id")
-
-    user = Accounts.get_user!(user_id)
+      |> get_session("user")
 
     case Complaints.create_complaint(Map.put(complaint_params, "user", user)) do
       {:ok, complaint} ->
@@ -50,14 +35,16 @@ defmodule KomplenWeb.ComplaintController do
     render(conn, "show.html", complaint: complaint)
   end
 
-  # TODO: need to check for user_id here
+  # I think it's safe to not check for user id here
+  # because it is only available from the session
   def edit(conn, %{"id" => id}) do
     complaint = Complaints.get_complaint!(id)
     changeset = Complaints.change_complaint(complaint)
     render(conn, "edit.html", complaint: complaint, changeset: changeset)
   end
 
-  # TODO: need to check for user_id here
+  # I think it's safe to not check for user id here
+  # because it is only available from the session
   def update(conn, %{"id" => id, "complaint" => complaint_params}) do
     complaint = Complaints.get_complaint!(id)
 
@@ -72,6 +59,8 @@ defmodule KomplenWeb.ComplaintController do
     end
   end
 
+  # I think it's safe to not check for user id here
+  # because it is only available from the session
   def delete(conn, %{"id" => id}) do
     complaint = Complaints.get_complaint!(id)
     {:ok, _complaint} = Complaints.delete_complaint(complaint)

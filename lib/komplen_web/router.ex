@@ -1,6 +1,8 @@
 defmodule KomplenWeb.Router do
   use KomplenWeb, :router
 
+  alias Komplen.Accounts
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -16,11 +18,48 @@ defmodule KomplenWeb.Router do
   scope "/", KomplenWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
-    resources "/complaints", ComplaintController
+    # get "/", PageController, :index
+    get "/", ComplaintController, :index
+    resources "/complaints", ComplaintController, only: [:index]
+    # this is kinda like a hack
+    # otherwise, cannot go to this route because new is considered an id so it will be handled in :show instead
+    # this route kinda makes sense because there is a similar one in edit
+    get "/complaints/:id/view", ComplaintController, :show
+
     resources "/users", UserController
     resources "/admins", AdminController
     resources "/sessions", SessionController, only: [:new, :create, :delete], singleton: true
+
+    pipe_through :auth
+    resources "/complaints", ComplaintController, except: [:index, :show]
+  end
+
+  # TODO: should move this to a module plug instead
+  def auth(conn, _opts) do
+    user_id =
+      conn
+      |> get_session("user_id")
+
+    case user_id do
+      nil ->
+        conn
+        |> put_flash(:error, "Unauthorized")
+        |> Phoenix.Controller.redirect(to: "/sessions/new")
+        |> halt
+
+      _ ->
+        case Accounts.authenticate_by_id(user_id) do
+          {:error, :unauthorized} ->
+            conn
+            |> put_flash(:error, "Unauthorized")
+            |> Phoenix.Controller.redirect(to: "/sessions/new")
+            |> halt
+
+          {:ok, user} ->
+            conn
+            |> put_session("user", user)
+        end
+    end
   end
 
   # Other scopes may use custom stacks.
