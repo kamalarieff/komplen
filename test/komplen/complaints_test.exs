@@ -95,4 +95,49 @@ defmodule Komplen.ComplaintsTest do
       assert %Ecto.Changeset{} = Complaints.change_complaint(complaint)
     end
   end
+
+  describe "vouches" do
+    alias Komplen.Complaints.Vouch
+
+    @invalid_attrs %{}
+
+    def vouch_fixture() do
+      complaint = complaint_fixture()
+
+      {:ok, vouch} =
+        %{user_id: complaint.user_id, complaint_id: complaint.id}
+        |> Complaints.add_vouch()
+
+      vouch
+    end
+
+    test "list_vouches/0 returns all vouches" do
+      vouch = vouch_fixture()
+      assert Complaints.list_vouches() == [vouch]
+    end
+
+    test "get_vouch!/1 returns the vouch with given id" do
+      vouch = vouch_fixture()
+      assert Complaints.get_vouch!(vouch.id) == vouch
+    end
+
+    test "add_vouch/1 with valid data creates a vouch" do
+      complaint = complaint_fixture()
+
+      assert {:ok, %Vouch{} = _vouch} =
+               %{user_id: complaint.user_id, complaint_id: complaint.id}
+               |> Complaints.add_vouch()
+    end
+
+    @tag :individual_test
+    test "add_vouch/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Complaints.add_vouch(@invalid_attrs)
+    end
+
+    test "remove_vouch/1 deletes the vouch" do
+      vouch = vouch_fixture()
+      assert {:ok, %Vouch{}} = Complaints.remove_vouch(vouch)
+      assert_raise Ecto.NoResultsError, fn -> Complaints.get_vouch!(vouch.id) end
+    end
+  end
 end

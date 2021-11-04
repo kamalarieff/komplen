@@ -34,6 +34,14 @@ defmodule KomplenWeb.Router do
     resources "/complaints", ComplaintController, except: [:index, :show]
   end
 
+  scope "/api", KomplenWeb do
+    pipe_through :api
+    resources "/vouches", VouchController, only: [:index, :show]
+
+    pipe_through :auth
+    resources "/vouches", VouchController, only: [:create, :delete]
+  end
+
   # TODO: should move this to a module plug instead
   def auth(conn, _opts) do
     user_id =

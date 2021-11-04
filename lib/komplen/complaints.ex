@@ -2,6 +2,7 @@ defmodule Komplen.Complaints do
   @moduledoc """
   The Complaints context.
   """
+  require Logger
 
   import Ecto.Query, warn: false
   alias Komplen.Repo
@@ -117,5 +118,76 @@ defmodule Komplen.Complaints do
   """
   def change_complaint(%Complaint{} = complaint, attrs \\ %{}) do
     Complaint.changeset(complaint, attrs)
+  end
+
+  alias Komplen.Complaints.Vouch
+
+  @doc """
+  Returns the list of vouches.
+
+  ## Examples
+
+      iex> list_vouches()
+      [%Vouch{}, ...]
+
+  """
+  def list_vouches do
+    Repo.all(Vouch)
+  end
+
+  @doc """
+  Gets a single vouch.
+
+  Raises `Ecto.NoResultsError` if the Vouch does not exist.
+
+  ## Examples
+
+      iex> get_vouch!(123)
+      %Vouch{}
+
+      iex> get_vouch!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_vouch!(id), do: Repo.get!(Vouch, id)
+
+  @doc """
+  Creates a vouch.
+
+  ## Examples
+
+      iex> add_vouch(%{field: value})
+      {:ok, %Vouch{}}
+
+      iex> add_vouch(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def add_vouch(attrs \\ %{}) do
+    try do
+      %Vouch{}
+      |> Vouch.changeset(attrs)
+      |> Repo.insert()
+    rescue
+      e ->
+        Logger.error(Exception.format(:error, e, __STACKTRACE__))
+        {:error, %Ecto.Changeset{}}
+    end
+  end
+
+  @doc """
+  Deletes a vouch.
+
+  ## Examples
+
+      iex> remove_vouch(vouch)
+      {:ok, %Vouch{}}
+
+      iex> remove_vouch(vouch)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def remove_vouch(%Vouch{} = vouch) do
+    Repo.delete(vouch)
   end
 end

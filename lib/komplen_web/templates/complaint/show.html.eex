@@ -15,4 +15,5 @@
 </ul>
 
 <span><%= link "Edit", to: Routes.complaint_path(@conn, :edit, @complaint) %></span>
+<span><%= link "Vouch", to: Routes.vouch_path(@conn, :create, %{complaint_id: @complaint.id}) %></span>
 <span><%= link "Back", to: Routes.complaint_path(@conn, :index) %></span>

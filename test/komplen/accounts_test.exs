@@ -46,7 +46,6 @@ defmodule Komplen.AccountsTest do
       assert user.username == "some updated username"
     end
 
-    @tag individual_test: "yup"
     test "authenticate_by_name/1 and authenticate_by_id/1 with valid data returns user" do
       user = user_fixture()
       assert {:ok, %User{} = user} = Accounts.authenticate_by_name("some name")
@@ -109,7 +108,6 @@ defmodule Komplen.AccountsTest do
       assert Accounts.get_admin!(admin.id) == admin
     end
 
-    @tag individual_test: "yup"
     test "create_admin/1 with valid user data creates a admin" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_user_attrs)
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(user, @valid_attrs)
@@ -117,7 +115,6 @@ defmodule Komplen.AccountsTest do
       IO.inspect(admin)
     end
 
-    @tag individual_test: "yup"
     test "create_admin/1 with invalid user data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(%User{}, @valid_attrs)
     end
