@@ -15,5 +15,10 @@
 </ul>
 
 <span><%= link "Edit", to: Routes.complaint_path(@conn, :edit, @complaint) %></span>
-<span><%= link "Vouch", to: Routes.vouch_path(@conn, :create, %{complaint_id: @complaint.id}) %></span>
+
+<%= if @vouch_id != nil do %>
+  <span><%= link "Unvouch", to: Routes.vouch_path(@conn, :delete, @vouch_id), method: :delete %></span>
+<% else %>
+  <span><%= link "Vouch", to: Routes.vouch_path(@conn, :create, %{complaint_id: @complaint.id}), method: :post %></span>
+<% end %>
 <span><%= link "Back", to: Routes.complaint_path(@conn, :index) %></span>

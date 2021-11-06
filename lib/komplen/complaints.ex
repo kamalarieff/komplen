@@ -152,6 +152,42 @@ defmodule Komplen.Complaints do
   def get_vouch!(id), do: Repo.get!(Vouch, id)
 
   @doc """
+  Gets a single vouch via complaint id.
+
+  Raises `Ecto.NoResultsError` if the Vouch does not exist.
+
+  ## Examples
+
+      iex> get_vouch_by_complaint_id(123)
+      %Vouch{}
+
+      iex> get_vouch_by_complaint_id(456)
+      {:not_found}
+
+  """
+  def get_vouch_by_complaint_id(id) do
+    # try do
+    #   Repo.get_by(Vouch, complaint_id: id)
+    #   # Pipe into a case statement
+    #   # https://devrants.blog/2020/10/25/elixir-you-can-pipe-into-a-case-statement/
+    #   |> case do
+    #     nil ->
+    #       {:not_found}
+
+    #     %Vouch{} = vouch ->
+    #       vouch
+    #   end
+    # rescue
+    #   # should just let it crash. The Elixir way
+    #   # https://elixirforum.com/t/gracefully-handling-ecto-repo-one-exception/11701/2
+    #   e ->
+    #     Logger.error(Exception.format(:error, e, __STACKTRACE__))
+    #     {:not_found}
+    # end
+    Repo.get_by(Vouch, complaint_id: id)
+  end
+
+  @doc """
   Creates a vouch.
 
   ## Examples

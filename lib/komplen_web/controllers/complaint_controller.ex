@@ -32,7 +32,15 @@ defmodule KomplenWeb.ComplaintController do
 
   def show(conn, %{"id" => id}) do
     complaint = Complaints.get_complaint!(id)
-    render(conn, "show.html", complaint: complaint)
+    vouch = Complaints.get_vouch_by_complaint_id(complaint.id)
+
+    case vouch do
+      nil ->
+        render(conn, "show.html", complaint: complaint, vouch_id: nil)
+
+      vouch = vouch ->
+        render(conn, "show.html", complaint: complaint, vouch_id: vouch.id)
+    end
   end
 
   # I think it's safe to not check for user id here
