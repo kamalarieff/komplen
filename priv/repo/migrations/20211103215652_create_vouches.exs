@@ -13,5 +13,9 @@ defmodule Komplen.Repo.Migrations.CreateVouches do
 
     create index(:vouches, [:complaint_id])
     create index(:vouches, [:user_id])
+    # YOGHIRT: This is how to create unique constraint
+    # you need to add something to the changeset as well
+    # https://stackoverflow.com/questions/36418223/creating-a-unique-constraint-on-two-columns-together-in-ecto
+    create unique_index(:vouches, [:complaint_id, :user_id], name: :unique_user_complaint)
   end
 end

@@ -28,5 +28,6 @@ defmodule Komplen.Complaints.Vouch do
     |> cast(attrs, [:user_id, :complaint_id])
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:complaint_id)
+    |> unique_constraint(:unique_user_complaint, name: :unique_user_complaint)
   end
 end
