@@ -42,7 +42,7 @@ defmodule KomplenWeb.VouchControllerTest do
         |> fetch_flash()
         |> post(Routes.vouch_path(conn, :create), %{"complaint_id" => complaint.id})
 
-      assert redirected_to(conn) == Routes.session_path(conn, :new)
+      assert redirected_to(conn) == Routes.user_path(conn, :new)
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do
@@ -79,7 +79,7 @@ defmodule KomplenWeb.VouchControllerTest do
         |> fetch_flash()
         |> delete(Routes.vouch_path(conn, :delete, vouch.id))
 
-      assert redirected_to(conn) == Routes.session_path(conn, :new)
+      assert redirected_to(conn) == Routes.user_path(conn, :new)
     end
   end
 

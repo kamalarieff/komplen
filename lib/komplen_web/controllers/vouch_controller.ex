@@ -29,11 +29,18 @@ defmodule KomplenWeb.VouchController do
   end
 
   def delete(conn, %{"id" => vouch_id}) do
+    user_id = get_session(conn, "user_id")
     vouch = Complaints.get_vouch!(vouch_id)
 
-    with {:ok, %Vouch{}} <- Complaints.remove_vouch(vouch) do
-      conn
-      |> redirect(to: Routes.complaint_path(conn, :show, vouch.complaint_id))
+    case user_id do
+      nil ->
+        {:error, :unauthorized}
+
+      _ ->
+        with {:ok, %Vouch{}} <- Complaints.remove_vouch(vouch) do
+          conn
+          |> redirect(to: Routes.complaint_path(conn, :show, vouch.complaint_id))
+        end
     end
   end
 end
