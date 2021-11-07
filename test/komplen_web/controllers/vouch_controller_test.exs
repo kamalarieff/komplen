@@ -23,17 +23,6 @@ defmodule KomplenWeb.VouchControllerTest do
     {user, complaint}
   end
 
-  setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
-  end
-
-  describe "index" do
-    test "lists all vouches", %{conn: conn} do
-      conn = get(conn, Routes.vouch_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
-    end
-  end
-
   describe "create vouch" do
     setup [:create_user_complaint]
 
@@ -43,13 +32,7 @@ defmodule KomplenWeb.VouchControllerTest do
         |> init_test_session(user_id: user.id)
         |> post(Routes.vouch_path(conn, :create), %{"complaint_id" => complaint.id})
 
-      assert %{"id" => id} = json_response(conn, 201)["data"]
-
-      conn = get(conn, Routes.vouch_path(conn, :show, id))
-
-      assert %{
-               "id" => id
-             } = json_response(conn, 200)["data"]
+      assert redirected_to(conn) == Routes.complaint_path(conn, :show, complaint.id)
     end
 
     test "renders errors when user is not logged in", %{conn: conn, complaint: complaint} do
@@ -85,11 +68,7 @@ defmodule KomplenWeb.VouchControllerTest do
         |> init_test_session(user_id: user.id)
         |> delete(Routes.vouch_path(conn, :delete, vouch.id))
 
-      assert response(conn, 204)
-
-      assert_error_sent 404, fn ->
-        get(conn, Routes.vouch_path(conn, :show, vouch.id))
-      end
+      assert redirected_to(conn) == Routes.complaint_path(conn, :show, vouch.complaint_id)
     end
 
     @tag :individual_test
