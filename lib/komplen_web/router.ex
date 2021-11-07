@@ -13,7 +13,6 @@ defmodule KomplenWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug :fetch_session
   end
 
   scope "/", KomplenWeb do
@@ -33,13 +32,6 @@ defmodule KomplenWeb.Router do
 
     pipe_through :auth
     resources "/complaints", ComplaintController, except: [:index, :show]
-  end
-
-  scope "/api", KomplenWeb do
-    pipe_through :api
-    resources "/vouches", VouchController, only: [:index, :show]
-
-    pipe_through :auth
     resources "/vouches", VouchController, only: [:create, :delete]
   end
 

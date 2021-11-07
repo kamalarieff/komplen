@@ -3,13 +3,9 @@ defmodule KomplenWeb.VouchController do
 
   alias Komplen.Complaints
   alias Komplen.Complaints.Vouch
+  alias KomplenWeb.ComplaintView
 
   action_fallback KomplenWeb.FallbackController
-
-  def index(conn, _params) do
-    vouches = Complaints.list_vouches()
-    render(conn, "index.json", vouches: vouches)
-  end
 
   # not sure if this is the recommended way to do it
   def create(_, attrs) when map_size(attrs) == 0, do: {:error, :unprocessable_entity}
@@ -26,25 +22,25 @@ defmodule KomplenWeb.VouchController do
 
       _ ->
         with {:ok, %Vouch{} = vouch} <-
-               Complaints.add_vouch(%{user_id: user_id, complaint_id: complaint_id}) do
+               Complaints.add_vouch(%{user_id: user_id, complaint_id: complaint_id}),
+             complaint <- Complaints.get_complaint!(complaint_id) do
           conn
-          |> put_status(:created)
-          |> put_resp_header("location", Routes.vouch_path(conn, :show, vouch))
-          |> render("show.json", vouch: vouch)
+          # TODO: This is not correct because the URL shows /vouches instead of /complaints
+          |> put_view(ComplaintView)
+          |> render("show.html", complaint: complaint, vouch_id: vouch.id)
         end
     end
-  end
-
-  def show(conn, %{"id" => vouch_id}) do
-    vouch = Complaints.get_vouch!(vouch_id)
-    render(conn, "show.json", vouch: vouch)
   end
 
   def delete(conn, %{"id" => vouch_id}) do
     vouch = Complaints.get_vouch!(vouch_id)
 
-    with {:ok, %Vouch{}} <- Complaints.remove_vouch(vouch) do
-      send_resp(conn, :no_content, "")
+    with complaint <- Complaints.get_complaint!(vouch.complaint_id),
+         {:ok, %Vouch{}} <- Complaints.remove_vouch(vouch) do
+      conn
+      # TODO: This is not correct because the URL shows /vouches instead of /complaints
+      |> put_view(ComplaintView)
+      |> render("show.html", complaint: complaint, vouch_id: nil)
     end
   end
 end

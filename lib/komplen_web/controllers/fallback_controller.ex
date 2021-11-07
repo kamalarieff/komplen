@@ -33,8 +33,7 @@ defmodule KomplenWeb.FallbackController do
   # This clause is an example of how to handle unauthorized
   def call(conn, {:error, :unauthorized}) do
     conn
-    |> put_status(:unauthorized)
-    |> put_view(KomplenWeb.ErrorView)
-    |> render(:"401")
+    |> put_flash(:error, "Unauthorized")
+    |> redirect(to: Routes.session_path(conn, :new))
   end
 end
