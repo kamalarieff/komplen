@@ -8,7 +8,7 @@ defmodule KomplenWeb.SessionController do
   end
 
   def create(conn, %{"user" => %{"name" => name}}) do
-    case Accounts.authenticate_by_name(name) do
+    case Accounts.authenticate_by_username(name) do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Welcome #{name}")

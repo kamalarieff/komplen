@@ -1,12 +1,6 @@
 <h1>Show User</h1>
 
 <ul>
-
-  <li>
-    <strong>Name:</strong>
-    <%= @user.name %>
-  </li>
-
   <li>
     <strong>Username:</strong>
     <%= @user.username %>

@@ -33,6 +33,7 @@ defmodule KomplenWeb.Router do
 
     pipe_through :auth
     resources "/complaints", ComplaintController, except: [:index, :show]
+    resources "/profiles", ProfileController
   end
 
   # TODO: should move this to a module plug instead

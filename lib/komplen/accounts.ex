@@ -206,25 +206,25 @@ defmodule Komplen.Accounts do
   end
 
   @doc """
-  Authenticate by name.
+  Authenticate by username.
 
   ## Examples
 
-      iex> authenticate_by_name("value")
+      iex> authenticate_by_username("value") 
       {:ok, %User{}}
 
-      iex> authenticate_by_name("bad value")
+      iex> authenticate_by_username("bad value") 
       {:error, :unauthorized}
 
   """
-  def authenticate_by_name(name) when is_nil(name) do
+  def authenticate_by_username(username) when is_nil(username) do 
     {:error, :missing_name}
   end
 
-  def authenticate_by_name(name) do
+  def authenticate_by_username(username) do 
     query =
       from u in User,
-      where: u.name == ^name
+      where: u.username == ^username
 
     case Repo.one(query) do
       %User{} = user -> {:ok, user}
@@ -257,5 +257,101 @@ defmodule Komplen.Accounts do
       %User{} = user -> {:ok, user}
       nil -> {:error, :unauthorized}
     end
+  end
+
+  alias Komplen.Accounts.Profile
+
+  @doc """
+  Returns the list of profiles.
+
+  ## Examples
+
+      iex> list_profiles()
+      [%Profile{}, ...]
+
+  """
+  def list_profiles do
+    Repo.all(Profile)
+  end
+
+  @doc """
+  Gets a single profile.
+
+  Raises `Ecto.NoResultsError` if the Profile does not exist.
+
+  ## Examples
+
+      iex> get_profile!(123)
+      %Profile{}
+
+      iex> get_profile!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_profile!(id), do: Repo.get!(Profile, id)
+
+  @doc """
+  Creates a profile.
+
+  ## Examples
+
+      iex> create_profile(%{field: value})
+      {:ok, %Profile{}}
+
+      iex> create_profile(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_profile(attrs \\ %{}) do
+    %Profile{}
+    |> Profile.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a profile.
+
+  ## Examples
+
+      iex> update_profile(profile, %{field: new_value})
+      {:ok, %Profile{}}
+
+      iex> update_profile(profile, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_profile(%Profile{} = profile, attrs) do
+    profile
+    |> Profile.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a profile.
+
+  ## Examples
+
+      iex> delete_profile(profile)
+      {:ok, %Profile{}}
+
+      iex> delete_profile(profile)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_profile(%Profile{} = profile) do
+    Repo.delete(profile)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking profile changes.
+
+  ## Examples
+
+      iex> change_profile(profile)
+      %Ecto.Changeset{data: %Profile{}}
+
+  """
+  def change_profile(%Profile{} = profile, attrs \\ %{}) do
+    Profile.changeset(profile, attrs)
   end
 end

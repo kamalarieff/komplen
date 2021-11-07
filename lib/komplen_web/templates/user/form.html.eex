@@ -10,10 +10,6 @@
   </pre>
   <span>ID: <%= @changeset.data.id %></span>
 
-  <%= label f, :name %>
-  <%= text_input f, :name %>
-  <%= error_tag f, :name %>
-
   <%= label f, :username %>
   <%= text_input f, :username %>
   <%= error_tag f, :username %>

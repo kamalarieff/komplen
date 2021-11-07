@@ -2,12 +2,12 @@ defmodule Komplen.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Komplen.Accounts.Admin
+  alias Komplen.Accounts.{Admin,Profile}
 
   schema "users" do
-    field :name, :string
     field :username, :string
     has_one :admin, Admin
+    has_one :profile, Profile
 
     timestamps()
   end
@@ -15,8 +15,8 @@ defmodule Komplen.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :username])
-    |> validate_required([:name, :username])
+    |> cast(attrs, [:username])
+    |> validate_required([:username])
     |> unique_constraint(:username)
   end
 end
