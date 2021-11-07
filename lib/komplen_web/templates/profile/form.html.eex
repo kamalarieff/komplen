@@ -1,4 +1,4 @@
-<%= form_for @changeset, @action, fn f -> %>
+<%= form_for @changeset, @action, [method: :put, as: :profile], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
@@ -17,7 +17,7 @@
   <%= text_input f, :email %>
   <%= error_tag f, :email %>
 
-  <%= label f, :ic_number %>
+  <%= label f, :ic_number, "IC Number" %>
   <%= text_input f, :ic_number %>
   <%= error_tag f, :ic_number %>
 

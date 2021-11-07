@@ -17,8 +17,8 @@ defmodule Komplen.Accounts.Profile do
   @doc false
   def changeset(profile, attrs) do
     profile
-    |> cast(attrs, [:phone, :email, :name, :ic_number])
-    |> validate_required([:phone, :email, :name, :ic_number])
+    |> cast(attrs, [:phone, :email, :name, :ic_number, :user_id])
+    |> validate_required([:phone, :email, :name, :ic_number, :user_id])
     |> foreign_key_constraint(:user_id)
   end
 end

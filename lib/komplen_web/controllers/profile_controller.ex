@@ -4,59 +4,55 @@ defmodule KomplenWeb.ProfileController do
   alias Komplen.Accounts
   alias Komplen.Accounts.Profile
 
-  def index(conn, _params) do
-    profiles = Accounts.list_profiles()
-    render(conn, "index.html", profiles: profiles)
+  def show(conn, _params) do
+    user =
+      conn
+      |> get_session("user")
+
+    profile = Accounts.get_profile_by_user_id(user.id)
+
+    case profile do
+      nil ->
+        render(conn, "show.html", profile: %Profile{})
+
+      _ ->
+        render(conn, "show.html", profile: profile)
+    end
   end
 
-  def new(conn, _params) do
-    changeset = Accounts.change_profile(%Profile{})
-    render(conn, "new.html", changeset: changeset)
+  def edit(conn, _params) do
+    user =
+      conn
+      |> get_session("user")
+
+    profile = Accounts.get_profile_by_user_id(user.id)
+
+    case profile do
+      nil ->
+        profile = %Profile{}
+        changeset = Accounts.change_profile(profile)
+        render(conn, "edit.html", changeset: changeset)
+
+      _ ->
+        changeset = Accounts.change_profile(profile)
+        render(conn, "edit.html", changeset: changeset)
+    end
   end
 
-  def create(conn, %{"profile" => profile_params}) do
-    case Accounts.create_profile(profile_params) do
-      {:ok, profile} ->
+  def update(conn, %{"profile" => profile_params}) do
+    user =
+      conn
+      |> get_session("user")
+
+    case Accounts.update_profile(%Profile{}, Map.put(profile_params, "user_id", user.id)) do
+      {:ok, _profile} ->
         conn
         |> put_flash(:info, "Profile created successfully.")
-        |> redirect(to: Routes.profile_path(conn, :show, profile))
+        # YOGHIRT for singleton, don't have to pass the profile to the html
+        |> redirect(to: Routes.profile_path(conn, :show))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        render(conn, "edit.html", changeset: changeset)
     end
-  end
-
-  def show(conn, %{"id" => id}) do
-    profile = Accounts.get_profile!(id)
-    render(conn, "show.html", profile: profile)
-  end
-
-  def edit(conn, %{"id" => id}) do
-    profile = Accounts.get_profile!(id)
-    changeset = Accounts.change_profile(profile)
-    render(conn, "edit.html", profile: profile, changeset: changeset)
-  end
-
-  def update(conn, %{"id" => id, "profile" => profile_params}) do
-    profile = Accounts.get_profile!(id)
-
-    case Accounts.update_profile(profile, profile_params) do
-      {:ok, profile} ->
-        conn
-        |> put_flash(:info, "Profile updated successfully.")
-        |> redirect(to: Routes.profile_path(conn, :show, profile))
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", profile: profile, changeset: changeset)
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    profile = Accounts.get_profile!(id)
-    {:ok, _profile} = Accounts.delete_profile(profile)
-
-    conn
-    |> put_flash(:info, "Profile deleted successfully.")
-    |> redirect(to: Routes.profile_path(conn, :index))
   end
 end

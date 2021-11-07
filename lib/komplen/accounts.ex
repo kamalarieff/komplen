@@ -217,14 +217,14 @@ defmodule Komplen.Accounts do
       {:error, :unauthorized}
 
   """
-  def authenticate_by_username(username) when is_nil(username) do 
+  def authenticate_by_username(username) when is_nil(username) do
     {:error, :missing_name}
   end
 
-  def authenticate_by_username(username) do 
+  def authenticate_by_username(username) do
     query =
       from u in User,
-      where: u.username == ^username
+        where: u.username == ^username
 
     case Repo.one(query) do
       %User{} = user -> {:ok, user}
@@ -251,7 +251,7 @@ defmodule Komplen.Accounts do
   def authenticate_by_id(id) do
     query =
       from u in User,
-      where: u.id == ^id
+        where: u.id == ^id
 
     case Repo.one(query) do
       %User{} = user -> {:ok, user}
@@ -291,6 +291,22 @@ defmodule Komplen.Accounts do
   def get_profile!(id), do: Repo.get!(Profile, id)
 
   @doc """
+  Gets a single profile via user id.
+
+  Raises `Ecto.NoResultsError` if the Profile does not exist.
+
+  ## Examples
+
+      iex> get_profile_by_user_id(123)
+      %Profile{}
+
+      iex> get_profile_by_user_id(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_profile_by_user_id(id), do: Repo.get_by(Profile, user_id: id)
+
+  @doc """
   Creates a profile.
 
   ## Examples
@@ -320,10 +336,17 @@ defmodule Komplen.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_profile(%Profile{} = profile, attrs) do
-    profile
+  def update_profile(%Profile{} = _profile, attrs) do
+    %{"user_id" => user_id} = attrs
+
+    case Repo.get_by(Profile, user_id: user_id) do
+      # Profile not found, we build one
+      nil -> %Profile{}
+      # Profile exists, let's use it
+      profile -> profile
+    end
     |> Profile.changeset(attrs)
-    |> Repo.update()
+    |> Repo.insert_or_update()
   end
 
   @doc """

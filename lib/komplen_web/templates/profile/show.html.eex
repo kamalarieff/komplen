@@ -1,8 +1,25 @@
 <h1>Show Profile</h1>
 
 <ul>
+  <li>
+    <strong>Name:</strong>
+    <%= @profile.name %>
+  </li>
 
+  <li>
+    <strong>Phone:</strong>
+    <%= @profile.phone %>
+  </li>
+
+  <li>
+    <strong>Email:</strong>
+    <%= @profile.email %>
+  </li>
+
+  <li>
+    <strong>IC number:</strong>
+    <%= @profile.ic_number %>
+  </li>
 </ul>
 
-<span><%= link "Edit", to: Routes.profile_path(@conn, :edit, @profile) %></span>
-<span><%= link "Back", to: Routes.profile_path(@conn, :index) %></span>
+<span><%= link "Edit", to: Routes.profile_path(@conn, :edit) %></span>
