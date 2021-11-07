@@ -3,7 +3,6 @@ defmodule KomplenWeb.VouchController do
 
   alias Komplen.Complaints
   alias Komplen.Complaints.Vouch
-  alias KomplenWeb.ComplaintView
 
   action_fallback KomplenWeb.FallbackController
 
@@ -21,13 +20,10 @@ defmodule KomplenWeb.VouchController do
         {:error, :unauthorized}
 
       _ ->
-        with {:ok, %Vouch{} = vouch} <-
-               Complaints.add_vouch(%{user_id: user_id, complaint_id: complaint_id}),
-             complaint <- Complaints.get_complaint!(complaint_id) do
+        with {:ok, %Vouch{}} <-
+               Complaints.add_vouch(%{user_id: user_id, complaint_id: complaint_id}) do
           conn
-          # TODO: This is not correct because the URL shows /vouches instead of /complaints
-          |> put_view(ComplaintView)
-          |> render("show.html", complaint: complaint, vouch_id: vouch.id)
+          |> redirect(to: Routes.complaint_path(conn, :show, complaint_id))
         end
     end
   end
@@ -35,12 +31,9 @@ defmodule KomplenWeb.VouchController do
   def delete(conn, %{"id" => vouch_id}) do
     vouch = Complaints.get_vouch!(vouch_id)
 
-    with complaint <- Complaints.get_complaint!(vouch.complaint_id),
-         {:ok, %Vouch{}} <- Complaints.remove_vouch(vouch) do
+    with {:ok, %Vouch{}} <- Complaints.remove_vouch(vouch) do
       conn
-      # TODO: This is not correct because the URL shows /vouches instead of /complaints
-      |> put_view(ComplaintView)
-      |> render("show.html", complaint: complaint, vouch_id: nil)
+      |> redirect(to: Routes.complaint_path(conn, :show, vouch.complaint_id))
     end
   end
 end
