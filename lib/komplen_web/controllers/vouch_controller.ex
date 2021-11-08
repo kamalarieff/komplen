@@ -23,13 +23,14 @@ defmodule KomplenWeb.VouchController do
       _ ->
         # YOGHIRT Using with clause with guards
         # https://blog.sundaycoding.com/blog/2017/12/27/elixir-with-syntax-and-guard-clauses/
-        with profile when not is_nil(profile) <- Accounts.get_profile_by_user_id(user_id),
-             {:ok, %Vouch{}} <-
-               Complaints.add_vouch(%{user_id: user_id, complaint_id: complaint_id}) do
-          conn
-          |> redirect(to: Routes.complaint_path(conn, :show, complaint_id))
+        with profile when not is_nil(profile) <- Accounts.get_profile_by_user_id(user_id) do
+          with {:ok, %Vouch{}} <-
+                 Complaints.add_vouch(%{user_id: user_id, complaint_id: complaint_id}) do
+            conn
+            |> redirect(to: Routes.complaint_path(conn, :show, complaint_id))
+          end
         else
-          _ ->
+          nil ->
             {:error, :profile_not_found}
         end
     end

@@ -3,8 +3,14 @@ defmodule KomplenWeb.VouchControllerTest do
 
   alias Komplen.{Accounts, Complaints}
 
-  @create_user_attrs %{"name" => "some name", "username" => "some username"}
+  @create_user_attrs %{"username" => "some username"}
   @create_complaint_attrs %{"body" => "some body", "title" => "some title"}
+  @create_profile_attrs %{
+    name: "some name",
+    phone: "some phone",
+    email: "some email",
+    ic_number: "some ic_number"
+  }
 
   def fixture(:vouch, attrs) do
     %{user: user, complaint: complaint} = attrs
@@ -23,8 +29,30 @@ defmodule KomplenWeb.VouchControllerTest do
     {user, complaint}
   end
 
-  describe "create vouch" do
+  def fixture(:profile, user_id) do
+    {:ok, profile} =
+      @create_profile_attrs
+      |> Map.put(:user_id, user_id)
+      |> Accounts.create_profile()
+
+    profile
+  end
+
+  describe "create vouch when user doesn't have a profile" do
     setup [:create_user_complaint]
+
+    test "redirects to profile when vouching", %{conn: conn, user: user, complaint: complaint} do
+      conn =
+        conn
+        |> init_test_session(user_id: user.id)
+        |> post(Routes.vouch_path(conn, :create), %{"complaint_id" => complaint.id})
+
+      assert redirected_to(conn) == Routes.profile_path(conn, :edit)
+    end
+  end
+
+  describe "create vouch when user have a profile" do
+    setup [:create_user_complaint_profile]
 
     test "renders vouch when data is valid", %{conn: conn, user: user, complaint: complaint} do
       conn =
@@ -42,7 +70,7 @@ defmodule KomplenWeb.VouchControllerTest do
         |> fetch_flash()
         |> post(Routes.vouch_path(conn, :create), %{"complaint_id" => complaint.id})
 
-      assert redirected_to(conn) == Routes.user_path(conn, :new)
+      assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do
@@ -51,11 +79,10 @@ defmodule KomplenWeb.VouchControllerTest do
         |> init_test_session(user_id: user.id)
         |> post(Routes.vouch_path(conn, :create), %{"complaint_id" => -1})
 
+      # TODO: this is some remnants of when the vouch controller was an API
       assert %{
                "complaint_id" => ["does not exist"]
              } = json_response(conn, 422)["errors"]
-
-      # assert json_response(conn, 422)["errors"] != %{}
     end
   end
 
@@ -79,7 +106,7 @@ defmodule KomplenWeb.VouchControllerTest do
         |> fetch_flash()
         |> delete(Routes.vouch_path(conn, :delete, vouch.id))
 
-      assert redirected_to(conn) == Routes.user_path(conn, :new)
+      assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
   end
 
@@ -92,5 +119,17 @@ defmodule KomplenWeb.VouchControllerTest do
     {user, complaint} = fixture(:user_complaint)
     vouch = fixture(:vouch, %{user: user, complaint: complaint})
     %{vouch: vouch, user: user, complaint: complaint}
+  end
+
+  defp create_profile(_) do
+    user = fixture(:user)
+    profile = fixture(:profile, user.id)
+    %{profile: profile}
+  end
+
+  defp create_user_complaint_profile(_) do
+    {user, complaint} = fixture(:user_complaint)
+    profile = fixture(:profile, user.id)
+    %{profile: profile, user: user, complaint: complaint}
   end
 end
