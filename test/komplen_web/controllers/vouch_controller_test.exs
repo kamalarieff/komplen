@@ -12,10 +12,9 @@ defmodule KomplenWeb.VouchControllerTest do
     ic_number: "some ic_number"
   }
 
-  def fixture(:vouch, attrs) do
-    %{user: user, complaint: complaint} = attrs
-    {:ok, vouch} = Complaints.add_vouch(%{user_id: user.id, complaint_id: complaint.id})
-    vouch
+  def fixture(:user) do
+    {:ok, user} = Accounts.create_user(@create_user_attrs)
+    user
   end
 
   def fixture(:user_complaint) do
@@ -29,6 +28,21 @@ defmodule KomplenWeb.VouchControllerTest do
     {user, complaint}
   end
 
+  def fixture(:complaint, user) do
+    {:ok, complaint} =
+      @create_complaint_attrs
+      |> Map.put("user", user)
+      |> Complaints.create_complaint()
+
+    complaint
+  end
+
+  def fixture(:vouch, attrs) do
+    %{user: user, complaint: complaint} = attrs
+    {:ok, vouch} = Complaints.add_vouch(%{user_id: user.id, complaint_id: complaint.id})
+    vouch
+  end
+
   def fixture(:profile, user_id) do
     {:ok, profile} =
       @create_profile_attrs
@@ -39,7 +53,11 @@ defmodule KomplenWeb.VouchControllerTest do
   end
 
   describe "create vouch when user doesn't have a profile" do
-    setup [:create_user_complaint]
+    setup do
+      user = fixture(:user)
+      complaint = fixture(:complaint, user)
+      %{user: user, complaint: complaint}
+    end
 
     test "redirects to profile when vouching", %{conn: conn, user: user, complaint: complaint} do
       conn =
@@ -52,7 +70,12 @@ defmodule KomplenWeb.VouchControllerTest do
   end
 
   describe "create vouch when user have a profile" do
-    setup [:create_user_complaint_profile]
+    setup do
+      user = fixture(:user)
+      complaint = fixture(:complaint, user)
+      profile = fixture(:profile, user.id)
+      %{user: user, complaint: complaint, profile: profile}
+    end
 
     test "renders vouch when data is valid", %{conn: conn, user: user, complaint: complaint} do
       conn =
@@ -73,6 +96,7 @@ defmodule KomplenWeb.VouchControllerTest do
       assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
 
+    @tag :individual_test
     test "renders errors when data is invalid", %{conn: conn, user: user} do
       conn =
         conn
@@ -87,7 +111,12 @@ defmodule KomplenWeb.VouchControllerTest do
   end
 
   describe "delete vouch" do
-    setup [:create_vouch]
+    setup do
+      user = fixture(:user)
+      complaint = fixture(:complaint, user)
+      vouch = fixture(:vouch, %{user: user, complaint: complaint})
+      %{user: user, vouch: vouch}
+    end
 
     test "deletes chosen vouch", %{conn: conn, user: user, vouch: vouch} do
       conn =
@@ -108,28 +137,5 @@ defmodule KomplenWeb.VouchControllerTest do
 
       assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
-  end
-
-  defp create_user_complaint(_) do
-    {user, complaint} = fixture(:user_complaint)
-    %{user: user, complaint: complaint}
-  end
-
-  defp create_vouch(_) do
-    {user, complaint} = fixture(:user_complaint)
-    vouch = fixture(:vouch, %{user: user, complaint: complaint})
-    %{vouch: vouch, user: user, complaint: complaint}
-  end
-
-  defp create_profile(_) do
-    user = fixture(:user)
-    profile = fixture(:profile, user.id)
-    %{profile: profile}
-  end
-
-  defp create_user_complaint_profile(_) do
-    {user, complaint} = fixture(:user_complaint)
-    profile = fixture(:profile, user.id)
-    %{profile: profile, user: user, complaint: complaint}
   end
 end
