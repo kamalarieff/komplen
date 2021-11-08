@@ -2,6 +2,7 @@ defmodule KomplenWeb.VouchController do
   use KomplenWeb, :controller
 
   alias Komplen.Complaints
+  alias Komplen.Accounts
   alias Komplen.Complaints.Vouch
 
   action_fallback KomplenWeb.FallbackController
@@ -20,10 +21,16 @@ defmodule KomplenWeb.VouchController do
         {:error, :unauthorized}
 
       _ ->
-        with {:ok, %Vouch{}} <-
+        # YOGHIRT Using with clause with guards
+        # https://blog.sundaycoding.com/blog/2017/12/27/elixir-with-syntax-and-guard-clauses/
+        with profile when not is_nil(profile) <- Accounts.get_profile_by_user_id(user_id),
+             {:ok, %Vouch{}} <-
                Complaints.add_vouch(%{user_id: user_id, complaint_id: complaint_id}) do
           conn
           |> redirect(to: Routes.complaint_path(conn, :show, complaint_id))
+        else
+          _ ->
+            {:error, :profile_not_found}
         end
     end
   end

@@ -33,7 +33,14 @@ defmodule KomplenWeb.FallbackController do
   # This clause is an example of how to handle unauthorized
   def call(conn, {:error, :unauthorized}) do
     conn
-    |> put_flash(:error, "You must sign up first.")
-    |> redirect(to: Routes.user_path(conn, :new))
+    |> put_flash(:error, "Unauthorized.")
+    |> redirect(to: Routes.session_path(conn, :new))
+  end
+
+  # This clause is an example of how to handle profile not found
+  def call(conn, {:error, :profile_not_found}) do
+    conn
+    |> put_flash(:error, "You need to update profile.")
+    |> redirect(to: Routes.profile_path(conn, :edit))
   end
 end
