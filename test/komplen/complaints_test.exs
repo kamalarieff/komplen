@@ -126,6 +126,16 @@ defmodule Komplen.ComplaintsTest do
       assert Complaints.get_vouch_by_complaint_id(vouch.complaint_id) == vouch
     end
 
+    test "get_vouch_by_complaint_id_and_user_id/1 returns the vouch with given complaint id" do
+      vouch = vouch_fixture()
+      assert Complaints.get_vouch_by_complaint_id_and_user_id(vouch.complaint_id, vouch.user_id) == vouch
+    end
+
+    test "get_number_of_vouches_by_complaint_id/1 returns the vouch with given complaint id" do
+      vouch = vouch_fixture()
+      assert Complaints.get_number_of_vouches_by_complaint_id(vouch.complaint_id) == 1
+    end
+
     test "add_vouch/1 with valid data creates a vouch" do
       complaint = complaint_fixture()
 

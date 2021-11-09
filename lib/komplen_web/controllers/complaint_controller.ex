@@ -31,15 +31,27 @@ defmodule KomplenWeb.ComplaintController do
   end
 
   def show(conn, %{"id" => id}) do
+    user =
+      conn
+      |> get_session("user")
+
+    # TODO: not liking the code here. I thought being a functional language, you can pipe this.
+    # There is a blog post that can make this prettier. I'll leave it here for future reference
+    # https://iacobson.medium.com/piping-phoenix-contexts-3d54dbba8df9
     complaint = Complaints.get_complaint!(id)
-    vouch = Complaints.get_vouch_by_complaint_id(complaint.id)
+    vouch = Complaints.get_vouch_by_complaint_id_and_user_id(id, user.id)
+    num_vouches = Complaints.get_number_of_vouches_by_complaint_id(id)
 
     case vouch do
       nil ->
-        render(conn, "show.html", complaint: complaint, vouch_id: nil)
+        render(conn, "show.html", complaint: complaint, vouch_id: nil, num_vouches: num_vouches)
 
       vouch = vouch ->
-        render(conn, "show.html", complaint: complaint, vouch_id: vouch.id)
+        render(conn, "show.html",
+          complaint: complaint,
+          vouch_id: vouch.id,
+          num_vouches: num_vouches
+        )
     end
   end
 

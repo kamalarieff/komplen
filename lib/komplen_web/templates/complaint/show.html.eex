@@ -12,6 +12,11 @@
     <%= @complaint.body %>
   </li>
 
+  <li>
+    <strong>Vouches:</strong>
+    <%= @num_vouches %>
+  </li>
+
 </ul>
 
 <span><%= link "Edit", to: Routes.complaint_path(@conn, :edit, @complaint) %></span>

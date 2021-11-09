@@ -188,6 +188,40 @@ defmodule Komplen.Complaints do
   end
 
   @doc """
+  Gets a single vouch via complaint id and user_id.
+
+  ## Examples
+
+      iex> get_vouch_by_complaint_id_and_user_id(123, 1)
+      %Vouch{}
+
+      iex> get_vouch_by_complaint_id_and_user_id(456, 1)
+      nil
+
+  """
+  def get_vouch_by_complaint_id_and_user_id(complaint_id, user_id) do
+    query = from v in Vouch, where: v.complaint_id == ^complaint_id and v.user_id == ^user_id
+    Repo.one(query)
+  end
+
+  @doc """
+  Gets number of vouches.
+
+  ## Examples
+
+      iex> get_number_of_vouches_by_complaint_id(123)
+      1
+
+      iex> get_number_of_vouches_by_complaint_id(456)
+      0
+
+  """
+  def get_number_of_vouches_by_complaint_id(complaint_id) do
+    query = from v in Vouch, where: v.complaint_id == ^complaint_id, select: count(v.id)
+    Repo.one!(query)
+  end
+
+  @doc """
   Creates a vouch.
 
   ## Examples
