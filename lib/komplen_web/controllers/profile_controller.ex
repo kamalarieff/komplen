@@ -44,7 +44,9 @@ defmodule KomplenWeb.ProfileController do
       conn
       |> get_session("user")
 
-    case Accounts.update_profile(%Profile{}, Map.put(profile_params, "user_id", user.id)) do
+    profile = Accounts.get_profile_by_user_id(user.id)
+
+    case Accounts.update_profile(profile, profile_params) do
       {:ok, _profile} ->
         conn
         |> put_flash(:info, "Profile created successfully.")

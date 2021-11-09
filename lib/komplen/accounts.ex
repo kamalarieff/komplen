@@ -301,7 +301,7 @@ defmodule Komplen.Accounts do
       %Profile{}
 
       iex> get_profile_by_user_id(456)
-      ** (Ecto.NoResultsError)
+      nil
 
   """
   def get_profile_by_user_id(id), do: Repo.get_by(Profile, user_id: id)
@@ -336,10 +336,8 @@ defmodule Komplen.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_profile(%Profile{} = _profile, attrs) do
-    %{"user_id" => user_id} = attrs
-
-    case Repo.get_by(Profile, user_id: user_id) do
+  def update_profile(%Profile{} = profile, attrs) do
+    case Repo.get_by(Profile, user_id: profile.user_id) do
       # Profile not found, we build one
       nil -> %Profile{}
       # Profile exists, let's use it

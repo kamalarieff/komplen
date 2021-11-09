@@ -83,7 +83,7 @@ defmodule Komplen.AccountsTest do
   end
 
   describe "admins" do
-    alias Komplen.Accounts.{User,Admin}
+    alias Komplen.Accounts.{User, Admin}
 
     @valid_user_attrs %{name: "some name", username: "some username"}
     @valid_attrs %{}
@@ -93,6 +93,7 @@ defmodule Komplen.AccountsTest do
     def admin_fixture(attrs \\ %{}) do
       {:ok, %User{} = user} = Accounts.create_user(@valid_user_attrs)
       {:ok, admin} = Accounts.create_admin(user, attrs)
+
       Admin
       |> Repo.get!(admin.id)
       |> Repo.preload(:user)
@@ -111,8 +112,6 @@ defmodule Komplen.AccountsTest do
     test "create_admin/1 with valid user data creates a admin" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_user_attrs)
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(user, @valid_attrs)
-      IO.inspect(user)
-      IO.inspect(admin)
     end
 
     test "create_admin/1 with invalid user data returns error changeset" do
@@ -153,33 +152,53 @@ defmodule Komplen.AccountsTest do
   end
 
   describe "profiles" do
-    alias Komplen.Accounts.Profile
+    alias Komplen.Accounts.{User, Profile}
 
-    @valid_attrs %{}
-    @update_attrs %{}
-    @invalid_attrs %{}
+    @valid_user_attrs %{username: "some username"}
+    @valid_attrs %{
+      "name" => "some name",
+      "phone" => "some phone",
+      "email" => "some email",
+      "ic_number" => "some ic_number"
+    }
+    @update_attrs %{
+      "name" => "updated name"
+    }
+    @invalid_attrs %{
+      "name" => ""
+    }
 
-    def profile_fixture(attrs \\ %{}) do
+    def profile_fixture(attrs \\ %User{}) do
+      %{id: user_id} = attrs
+
       {:ok, profile} =
-        attrs
-        |> Enum.into(@valid_attrs)
+        @valid_attrs
+        |> Map.put("user_id", user_id)
         |> Accounts.create_profile()
 
       profile
     end
 
     test "list_profiles/0 returns all profiles" do
-      profile = profile_fixture()
+      user = user_fixture()
+      profile = profile_fixture(user)
       assert Accounts.list_profiles() == [profile]
     end
 
     test "get_profile!/1 returns the profile with given id" do
-      profile = profile_fixture()
+      user = user_fixture()
+      profile = profile_fixture(user)
       assert Accounts.get_profile!(profile.id) == profile
     end
 
     test "create_profile/1 with valid data creates a profile" do
-      assert {:ok, %Profile{} = profile} = Accounts.create_profile(@valid_attrs)
+      user = user_fixture()
+
+      profile_attrs =
+        @valid_attrs
+        |> Map.put("user_id", user.id)
+
+      assert {:ok, %Profile{} = profile} = Accounts.create_profile(profile_attrs)
     end
 
     test "create_profile/1 with invalid data returns error changeset" do
@@ -187,24 +206,29 @@ defmodule Komplen.AccountsTest do
     end
 
     test "update_profile/2 with valid data updates the profile" do
-      profile = profile_fixture()
+      user = user_fixture()
+      profile = profile_fixture(user)
       assert {:ok, %Profile{} = profile} = Accounts.update_profile(profile, @update_attrs)
     end
 
     test "update_profile/2 with invalid data returns error changeset" do
-      profile = profile_fixture()
+      user = user_fixture()
+      profile = profile_fixture(user)
       assert {:error, %Ecto.Changeset{}} = Accounts.update_profile(profile, @invalid_attrs)
       assert profile == Accounts.get_profile!(profile.id)
     end
 
     test "delete_profile/1 deletes the profile" do
-      profile = profile_fixture()
+      user = user_fixture()
+      profile = profile_fixture(user)
       assert {:ok, %Profile{}} = Accounts.delete_profile(profile)
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_profile!(profile.id) end
     end
 
+    @tag :individual_test
     test "change_profile/1 returns a profile changeset" do
-      profile = profile_fixture()
+      user = user_fixture()
+      profile = profile_fixture(user)
       assert %Ecto.Changeset{} = Accounts.change_profile(profile)
     end
   end
