@@ -1,0 +1,37 @@
+<h1>Listing Complaints</h1>
+<pre><%= inspect @live_action %></pre>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal KomplenWeb.ComplaintLive.FormComponent,
+    id: @complaint.id || :new,
+    title: @page_title,
+    action: @live_action,
+    complaint: @complaint,
+    user_id: @user_id,
+    return_to: Routes.complaint_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="complaints">
+    <%= for complaint <- @complaints do %>
+      <tr id={"complaint-#{complaint.id}"}>
+        <td><%= complaint.title %></td>
+        <td><%= complaint.body %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.complaint_show_path(@socket, :show, complaint) %></span>
+          <span><%= live_patch "Edit", to: Routes.complaint_index_path(@socket, :edit, complaint) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: complaint.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Complaint", to: Routes.complaint_index_path(@socket, :new) %></span>

@@ -5,8 +5,9 @@ defmodule KomplenWeb.Router do
 
   pipeline :browser do
     plug :accepts, ["html"]
+    plug :put_root_layout, {KomplenWeb.LayoutView, :root}
     plug :fetch_session
-    plug :fetch_flash
+    plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -19,12 +20,19 @@ defmodule KomplenWeb.Router do
     pipe_through :browser
 
     # get "/", PageController, :index
-    get "/", ComplaintController, :index
-    resources "/complaints", ComplaintController, only: [:index]
+    # get "/", ComplaintController, :index
+    # resources "/complaints", ComplaintController, only: [:index]
     # this is kinda like a hack
     # otherwise, cannot go to this route because new is considered an id so it will be handled in :show instead
     # this route kinda makes sense because there is a similar one in edit
-    get "/complaints/:id/view", ComplaintController, :show
+    # get "/complaints/:id/view", ComplaintController, :show
+
+    live "/complaints", ComplaintLive.Index, :index
+    live "/complaints/new", ComplaintLive.Index, :new
+    live "/complaints/:id/edit", ComplaintLive.Index, :edit
+
+    live "/complaints/:id", ComplaintLive.Show, :show
+    live "/complaints/:id/show/edit", ComplaintLive.Show, :edit
 
     resources "/users", UserController
     resources "/admins", AdminController
@@ -32,7 +40,7 @@ defmodule KomplenWeb.Router do
     resources "/vouches", VouchController, only: [:create, :delete]
 
     pipe_through :auth
-    resources "/complaints", ComplaintController, except: [:index, :show]
+    # resources "/complaints", ComplaintController, except: [:index, :show]
     resources "/profile", ProfileController, only: [:show, :edit, :update], singleton: true
   end
 

@@ -1,0 +1,8 @@
+<h1>Show Complaint</h1>
+
+<ul>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.complaint_show_path(@socket, :edit, @complaint), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.complaint_index_path(@socket, :index) %></span>

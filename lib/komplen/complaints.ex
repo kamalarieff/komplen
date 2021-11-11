@@ -65,10 +65,10 @@ defmodule Komplen.Complaints do
   # Maybe you can check out the Elixir in action book
   # The code was sending the keys as strings but the test was sending it as atoms
   # I think you can delete this default params because it doesn't make sense
-  def create_complaint(attrs = %{"user" => user} \\ %{}) do
+  def create_complaint(attrs = %{"user_id" => user_id} \\ %{}) do
     # def create_complaint(attrs \\ %{}) do
     # %Complaint{}
-    %Complaint{user_id: user.id}
+    %Complaint{user_id: user_id}
     |> Complaint.changeset(attrs)
     |> Repo.insert()
   end
