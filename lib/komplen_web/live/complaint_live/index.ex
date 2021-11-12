@@ -25,10 +25,20 @@ defmodule KomplenWeb.ComplaintLive.Index do
   end
 
   @impl true
-  def handle_info(%{event: "save", payload: payload}, socket) do
+  def handle_info(%{event: "save", payload: complaint}, socket) do
     {:noreply,
      update(socket, :complaints, fn complaints ->
-       [payload | complaints]
+       [complaint | complaints]
+     end)}
+  end
+
+  @impl true
+  def handle_info(%{event: "update", payload: complaint}, socket) do
+    {:noreply,
+     update(socket, :complaints, fn complaints ->
+       Enum.map(complaints, fn x -> 
+         if x.id == complaint.id, do: complaint, else: x end
+       )
      end)}
   end
 
