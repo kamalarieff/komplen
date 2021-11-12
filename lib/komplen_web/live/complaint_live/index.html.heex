@@ -1,5 +1,4 @@
 <h1>Listing Complaints</h1>
-<pre><%= inspect @live_action %></pre>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal KomplenWeb.ComplaintLive.FormComponent,

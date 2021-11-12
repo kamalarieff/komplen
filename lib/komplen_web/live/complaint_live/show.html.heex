@@ -1,8 +1,28 @@
 <h1>Show Complaint</h1>
 
-<ul>
+<%= if @live_action in [:edit] do %>
+  <%= live_modal KomplenWeb.ComplaintLive.FormComponent,
+    id: @complaint.id || :new,
+    title: @page_title,
+    action: @live_action,
+    complaint: @complaint,
+    user_id: @user_id,
+    return_to: Routes.complaint_show_path(@socket, :show, @complaint) %>
+<% end %>
 
+<ul>
+  <li>
+    <strong>Title:</strong>
+    <%= @complaint.title %>
+  </li>
+
+  <li>
+    <strong>Body:</strong>
+    <%= @complaint.body %>
+  </li>
 </ul>
 
-<span><%= live_patch "Edit", to: Routes.complaint_show_path(@socket, :edit, @complaint), class: "button" %></span> |
+<%= unless @live_action in [:edit] do %>
+  <span><%= live_patch "Edit", to: Routes.complaint_show_path(@socket, :edit, @complaint), class: "button" %></span> |
+<% end %>
 <span><%= live_redirect "Back", to: Routes.complaint_index_path(@socket, :index) %></span>
