@@ -20,9 +20,20 @@
     <strong>Body:</strong>
     <%= @complaint.body %>
   </li>
+  
+  <li>
+    <strong>Num vouches:</strong>
+    <%= @num_vouches %>
+  </li>
 </ul>
 
 <%= unless @live_action in [:edit] do %>
   <span><%= live_patch "Edit", to: Routes.complaint_show_path(@socket, :edit, @complaint), class: "button" %></span> |
+<% end %>
+
+<%= if not is_nil(@vouch_id) do %>
+  <button phx-click="remove_vouch" phx-value-complaint_id={@complaint.id}>Unvouch</button>
+<% else %>
+  <button phx-click="add_vouch" phx-value-complaint_id={@complaint.id}>Vouch</button>
 <% end %>
 <span><%= live_redirect "Back", to: Routes.complaint_index_path(@socket, :index) %></span>

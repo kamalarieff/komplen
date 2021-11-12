@@ -199,6 +199,8 @@ defmodule Komplen.Complaints do
       nil
 
   """
+  def get_vouch_by_complaint_id_and_user_id(_complaint_id, user_id) when is_nil(user_id), do: nil
+
   def get_vouch_by_complaint_id_and_user_id(complaint_id, user_id) do
     query = from v in Vouch, where: v.complaint_id == ^complaint_id and v.user_id == ^user_id
     Repo.one(query)
