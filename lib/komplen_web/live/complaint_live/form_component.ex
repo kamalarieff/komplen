@@ -3,6 +3,9 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
 
   alias Komplen.Complaints
 
+  # TODO: this is duplicated code. Try to find a better way
+  @complaints_topic "complaints:*"
+
   @impl true
   def update(%{complaint: complaint} = assigns, socket) do
     changeset = Complaints.change_complaint(complaint)
@@ -44,7 +47,8 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
   defp save_complaint(socket, :new, complaint_params) do
     user_id = socket.assigns.user_id
     case Complaints.create_complaint(Map.put(complaint_params, "user_id", user_id)) do
-      {:ok, _complaint} ->
+      {:ok, complaint} ->
+        KomplenWeb.Endpoint.broadcast(@complaints_topic, "save", complaint)
         {:noreply,
          socket
          |> put_flash(:info, "Complaint created successfully")

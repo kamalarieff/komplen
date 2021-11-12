@@ -4,21 +4,32 @@ defmodule KomplenWeb.ComplaintLive.Index do
   alias Komplen.Complaints
   alias Komplen.Complaints.Complaint
 
+  @complaints_topic "complaints:*"
+
   @impl true
   def mount(_params, session, socket) do
     user_id = Map.get(session, "user_id")
+    KomplenWeb.Endpoint.subscribe(@complaints_topic)
 
     socket =
       socket
       |> assign(:complaints, list_complaints())
       |> assign(:user_id, user_id)
 
-    {:ok, assign(socket, :complaints, list_complaints())}
+    {:ok, assign(socket, temporary_assigns: [complaints: []])}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  @impl true
+  def handle_info(%{event: "save", payload: payload}, socket) do
+    {:noreply,
+     update(socket, :complaints, fn complaints ->
+       [payload | complaints]
+     end)}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
@@ -39,14 +50,6 @@ defmodule KomplenWeb.ComplaintLive.Index do
     socket
     |> assign(:page_title, "Listing Complaints")
     |> assign(:complaint, nil)
-  end
-
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    complaint = Complaints.get_complaint!(id)
-    {:ok, _} = Complaints.delete_complaint(complaint)
-
-    {:noreply, assign(socket, :complaints, list_complaints())}
   end
 
   defp list_complaints do
