@@ -1,5 +1,0 @@
-<h1>Edit Complaint</h1>
-
-<%= render "form.html", Map.put(assigns, :action, Routes.complaint_path(@conn, :update, @complaint)) %>
-
-<span><%= link "Back", to: Routes.complaint_path(@conn, :index) %></span>

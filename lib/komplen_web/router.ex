@@ -20,12 +20,6 @@ defmodule KomplenWeb.Router do
     pipe_through :browser
 
     # get "/", PageController, :index
-    # get "/", ComplaintController, :index
-    # resources "/complaints", ComplaintController, only: [:index]
-    # this is kinda like a hack
-    # otherwise, cannot go to this route because new is considered an id so it will be handled in :show instead
-    # this route kinda makes sense because there is a similar one in edit
-    # get "/complaints/:id/view", ComplaintController, :show
 
     live "/complaints", ComplaintLive.Index, :index
     live "/complaints/new", ComplaintLive.Index, :new

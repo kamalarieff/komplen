@@ -123,19 +123,6 @@ defmodule Komplen.Complaints do
   alias Komplen.Complaints.Vouch
 
   @doc """
-  Returns the list of vouches.
-
-  ## Examples
-
-      iex> list_vouches()
-      [%Vouch{}, ...]
-
-  """
-  def list_vouches do
-    Repo.all(Vouch)
-  end
-
-  @doc """
   Gets a single vouch.
 
   Raises `Ecto.NoResultsError` if the Vouch does not exist.
@@ -152,88 +139,33 @@ defmodule Komplen.Complaints do
   def get_vouch!(id), do: Repo.get!(Vouch, id)
 
   @doc """
-  Gets a single vouch via complaint id.
-
-  Raises `Ecto.NoResultsError` if the Vouch does not exist.
-
-  ## Examples
-
-      iex> get_vouch_by_complaint_id(123)
-      %Vouch{}
-
-      iex> get_vouch_by_complaint_id(456)
-      {:not_found}
-
-  """
-  def get_vouch_by_complaint_id(id) do
-    # try do
-    #   Repo.get_by(Vouch, complaint_id: id)
-    #   # Pipe into a case statement
-    #   # https://devrants.blog/2020/10/25/elixir-you-can-pipe-into-a-case-statement/
-    #   |> case do
-    #     nil ->
-    #       {:not_found}
-
-    #     %Vouch{} = vouch ->
-    #       vouch
-    #   end
-    # rescue
-    #   # should just let it crash. The Elixir way
-    #   # https://elixirforum.com/t/gracefully-handling-ecto-repo-one-exception/11701/2
-    #   e ->
-    #     Logger.error(Exception.format(:error, e, __STACKTRACE__))
-    #     {:not_found}
-    # end
-    Repo.get_by(Vouch, complaint_id: id)
-  end
-
-  @doc """
   Gets a single vouch via complaint id and user_id.
 
   ## Examples
 
-      iex> get_vouch_by_complaint_id_and_user_id(123, 1)
+      iex> get_vouch([{:complaint_id, 1}, {:user_id, 1}])
       %Vouch{}
 
-      iex> get_vouch_by_complaint_id_and_user_id(456, 1)
-      nil
-
-  """
-  def get_vouch_by_complaint_id_and_user_id(_complaint_id, user_id) when is_nil(user_id), do: nil
-
-  def get_vouch_by_complaint_id_and_user_id(complaint_id, user_id) do
-    query = from v in Vouch, where: v.complaint_id == ^complaint_id and v.user_id == ^user_id
-    Repo.one(query)
-  end
-
-  @doc """
-  Gets a single vouch via complaint id and user_id.
-
-  ## Examples
-
-      iex> get_vouch1([{:complaint_id, 1}, {:user_id, 1}])
-      %Vouch{}
-
-      iex> get_vouch1([{:complaint_id, -1}, {:user_id, -1}])
+      iex> get_vouch([{:complaint_id, -1}, {:user_id, -1}])
       nil
 
   Gets a single vouch via user_id.
 
   ## Examples
 
-      iex> get_vouch1({:user_id, 1})
+      iex> get_vouch({:user_id, 1})
       %Vouch{}
 
-      iex> get_vouch1({:user_id, -1})
+      iex> get_vouch({:user_id, -1})
       nil
 
   """
-  def get_vouch1([{:complaint_id, complaint_id = complaint_id}, {:user_id, user_id = user_id}]) do
+  def get_vouch([{:complaint_id, complaint_id = complaint_id}, {:user_id, user_id = user_id}]) do
     query = from v in Vouch, where: v.complaint_id == ^complaint_id and v.user_id == ^user_id
     Repo.one(query)
   end
 
-  def get_vouch1({:user_id, id = id}) do
+  def get_vouch({:user_id, id = id}) do
     Repo.get_by(Vouch, user_id: id)
   end
 
@@ -245,27 +177,21 @@ defmodule Komplen.Complaints do
       iex> list_vouches1({:complaint_id, 1})
       [%Vouch{}, ...]
 
+  Returns the list of vouches.
+
+  ## Examples
+
+      iex> list_vouches()
+      [%Vouch{}, ...]
+
   """
-  def list_vouches1({:complaint_id, id = id}) do
+  def list_vouches({:complaint_id, id = id}) do
     query = from v in Vouch, where: v.complaint_id == ^id
     Repo.all(query)
   end
 
-  @doc """
-  Gets number of vouches.
-
-  ## Examples
-
-      iex> get_number_of_vouches_by_complaint_id(123)
-      1
-
-      iex> get_number_of_vouches_by_complaint_id(456)
-      0
-
-  """
-  def get_number_of_vouches_by_complaint_id(complaint_id) do
-    query = from v in Vouch, where: v.complaint_id == ^complaint_id, select: count(v.id)
-    Repo.one!(query)
+  def list_vouches do
+    Repo.all(Vouch)
   end
 
   @doc """

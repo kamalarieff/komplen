@@ -11,7 +11,7 @@ defmodule KomplenWeb.ComplaintLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    vouches = Complaints.list_vouches1({:complaint_id, id})
+    vouches = Complaints.list_vouches({:complaint_id, id})
 
     vouch_id =
       vouches
@@ -58,7 +58,7 @@ defmodule KomplenWeb.ComplaintLive.Show do
     complaint_topic = topic(complaint_id)
 
     vouch =
-      Complaints.get_vouch1([{:complaint_id, complaint_id}, {:user_id, socket.assigns.user_id}])
+      Complaints.get_vouch([{:complaint_id, complaint_id}, {:user_id, socket.assigns.user_id}])
 
     {:ok, _vouch} = Complaints.remove_vouch(vouch)
 
