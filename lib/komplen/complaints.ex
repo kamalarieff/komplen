@@ -207,6 +207,51 @@ defmodule Komplen.Complaints do
   end
 
   @doc """
+  Gets a single vouch via complaint id and user_id.
+
+  ## Examples
+
+      iex> get_vouch1([{:complaint_id, 1}, {:user_id, 1}])
+      %Vouch{}
+
+      iex> get_vouch1([{:complaint_id, -1}, {:user_id, -1}])
+      nil
+
+  Gets a single vouch via user_id.
+
+  ## Examples
+
+      iex> get_vouch1({:user_id, 1})
+      %Vouch{}
+
+      iex> get_vouch1({:user_id, -1})
+      nil
+
+  """
+  def get_vouch1([{:complaint_id, complaint_id = complaint_id}, {:user_id, user_id = user_id}]) do
+    query = from v in Vouch, where: v.complaint_id == ^complaint_id and v.user_id == ^user_id
+    Repo.one(query)
+  end
+
+  def get_vouch1({:user_id, id = id}) do
+    Repo.get_by(Vouch, user_id: id)
+  end
+
+  @doc """
+  Returns the list of vouches via complaint_id.
+
+  ## Examples
+
+      iex> list_vouches1({:complaint_id, 1})
+      [%Vouch{}, ...]
+
+  """
+  def list_vouches1({:complaint_id, id = id}) do
+    query = from v in Vouch, where: v.complaint_id == ^id
+    Repo.all(query)
+  end
+
+  @doc """
   Gets number of vouches.
 
   ## Examples
