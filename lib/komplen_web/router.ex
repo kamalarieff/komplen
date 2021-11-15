@@ -31,7 +31,6 @@ defmodule KomplenWeb.Router do
     resources "/users", UserController
     resources "/admins", AdminController
     resources "/sessions", SessionController, only: [:new, :create, :delete], singleton: true
-    resources "/vouches", VouchController, only: [:create, :delete]
 
     pipe_through :auth
     # resources "/complaints", ComplaintController, except: [:index, :show]
