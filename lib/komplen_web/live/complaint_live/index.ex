@@ -15,6 +15,7 @@ defmodule KomplenWeb.ComplaintLive.Index do
       socket
       |> assign(:complaints, list_complaints())
       |> assign(:user_id, user_id)
+      |> assign(:search_term, "")
 
     {:ok, assign(socket, temporary_assigns: [complaints: []])}
   end
@@ -28,7 +29,7 @@ defmodule KomplenWeb.ComplaintLive.Index do
   def handle_info(%{event: "save", payload: complaint}, socket) do
     {:noreply,
      update(socket, :complaints, fn complaints ->
-       [complaint | complaints]
+       complaints ++ [complaint]
      end)}
   end
 
@@ -40,6 +41,17 @@ defmodule KomplenWeb.ComplaintLive.Index do
          if x.id == complaint.id, do: complaint, else: x end
        )
      end)}
+
+  @impl true
+  def handle_event("search", %{"value" => value}, socket) when value == "" do
+    {:noreply, assign(socket, search_term: "", complaints: list_complaints())}
+  end
+
+  # TODO: I had to remove the phx-update=append in order to make this work
+  @impl true
+  def handle_event("search", %{"value" => value}, socket) do
+    complaints = Complaints.search_complaints(value)
+    {:noreply, assign(socket, search_term: value, complaints: complaints)}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do

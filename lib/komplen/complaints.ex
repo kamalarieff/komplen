@@ -120,6 +120,24 @@ defmodule Komplen.Complaints do
     Complaint.changeset(complaint, attrs)
   end
 
+  @doc """
+  Search for complaints based on search term
+
+  ## Examples
+
+      iex> search_complaints("test")
+      [%Complaint{}, %Complaint{}, ...]
+
+      iex> search_complaints("not existing")
+      []
+
+  """
+  def search_complaints(term) do
+    query = from c in Complaint, where: c.title == ^term
+    Repo.all(query)
+    |> Repo.preload(:user)
+  end
+
   alias Komplen.Complaints.Vouch
 
   @doc """

@@ -10,14 +10,22 @@
     return_to: Routes.complaint_index_path(@socket, :index) %>
 <% end %>
 
+<h2>Search</h2>
+<input type="text" placeholder="Search complaint" value={@search_term} phx-keyup="search" phx-debounce="500">
+
 <table>
   <thead>
     <tr>
-
-      <th></th>
+      <th>Title</th>
+      <th>Body</th>
     </tr>
   </thead>
-  <tbody id="complaints" phx-update="append">
+  <tbody id="complaints">
+    <%= if length(@complaints) == 0 do %>
+      <tr>
+        <td><span>No complaints found.</span></td>
+      </tr>
+    <% end %>
     <%= for complaint <- @complaints do %>
       <tr id={"complaint-#{complaint.id}"}>
         <td><%= complaint.title %></td>

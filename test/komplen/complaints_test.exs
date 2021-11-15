@@ -100,6 +100,11 @@ defmodule Komplen.ComplaintsTest do
       complaint = complaint_fixture()
       assert %Ecto.Changeset{} = Complaints.change_complaint(complaint)
     end
+
+    test "search_complaints/1 returns a complaint when given the exact term" do
+      complaint = complaint_fixture()
+      assert Complaints.search_complaints("some title") == [complaint]
+    end
   end
 
   describe "vouches" do
