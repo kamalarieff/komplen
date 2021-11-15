@@ -5,6 +5,8 @@ defmodule Komplen.ComplaintsTest do
   # alias Komplen.Accounts.User
   alias Komplen.Complaints
 
+  # TODO: use the generated fixtures module
+
   describe "complaints" do
     alias Komplen.Complaints.Complaint
 
@@ -22,7 +24,7 @@ defmodule Komplen.ComplaintsTest do
       {:ok, complaint} =
         attrs
         |> Enum.into(@valid_attrs)
-        |> Map.put("user", user)
+        |> Map.put("user_id", user.id)
         |> Complaints.create_complaint()
 
       complaint
@@ -52,23 +54,27 @@ defmodule Komplen.ComplaintsTest do
     test "create_complaint/1 with valid data and user creates a complaint" do
       # not sure if this is the best way to test this
       user = user_fixture()
-      complaint_with_user = Map.put(@valid_attrs, "user", user)
+      complaint_with_user = Map.put(@valid_attrs, "user_id", user.id)
       assert {:ok, %Complaint{} = complaint} = Complaints.create_complaint(complaint_with_user)
       assert complaint.body == "some body"
       assert complaint.title == "some title"
     end
 
     test "create_complaint/1 with valid data but invalid user returns error changeset" do
-      complaint_with_invalid_user = Map.put(@valid_attrs, "user", %{id: 1})
+      complaint_with_invalid_user = Map.put(@valid_attrs, "user_id", 1)
 
       assert {:error, %Ecto.Changeset{}} =
                Complaints.create_complaint(complaint_with_invalid_user)
     end
 
     test "create_complaint/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Complaints.create_complaint(@invalid_attrs)
+      complaint_with_invalid_data = Map.put(@invalid_attrs, "user_id", 1)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Complaints.create_complaint(complaint_with_invalid_data)
     end
 
+    @tag :individual_test
     test "update_complaint/2 with valid data updates the complaint" do
       complaint = complaint_fixture()
 
@@ -116,24 +122,21 @@ defmodule Komplen.ComplaintsTest do
       assert Complaints.list_vouches() == [vouch]
     end
 
+    test "list_vouches/1 returns all vouches based on the complaint_id" do
+      vouch = vouch_fixture()
+      assert Complaints.list_vouches({:complaint_id, vouch.complaint_id}) == [vouch]
+    end
+
     test "get_vouch!/1 returns the vouch with given id" do
       vouch = vouch_fixture()
       assert Complaints.get_vouch!(vouch.id) == vouch
     end
 
-    test "get_vouch_by_complaint_id/1 returns the vouch with given complaint id" do
+    test "get_vouch/1 returns the vouch with given complaint id and user id" do
       vouch = vouch_fixture()
-      assert Complaints.get_vouch_by_complaint_id(vouch.complaint_id) == vouch
-    end
 
-    test "get_vouch_by_complaint_id_and_user_id/1 returns the vouch with given complaint id" do
-      vouch = vouch_fixture()
-      assert Complaints.get_vouch_by_complaint_id_and_user_id(vouch.complaint_id, vouch.user_id) == vouch
-    end
-
-    test "get_number_of_vouches_by_complaint_id/1 returns the vouch with given complaint id" do
-      vouch = vouch_fixture()
-      assert Complaints.get_number_of_vouches_by_complaint_id(vouch.complaint_id) == 1
+      assert Complaints.get_vouch([{:complaint_id, vouch.complaint_id}, {:user_id, vouch.user_id}]) ==
+               vouch
     end
 
     test "add_vouch/1 with valid data creates a vouch" do
@@ -144,7 +147,6 @@ defmodule Komplen.ComplaintsTest do
                |> Complaints.add_vouch()
     end
 
-    @tag :individual_test
     test "add_vouch/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Complaints.add_vouch(@invalid_attrs)
     end
