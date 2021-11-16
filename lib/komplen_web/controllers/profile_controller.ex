@@ -49,7 +49,7 @@ defmodule KomplenWeb.ProfileController do
     case Accounts.update_profile(profile, profile_params) do
       {:ok, _profile} ->
         conn
-        |> put_flash(:info, "Profile created successfully.")
+        |> put_flash(:info, "Profile updated successfully.")
         # YOGHIRT for singleton, don't have to pass the profile to the html
         |> redirect(to: Routes.profile_path(conn, :show))
 
