@@ -1,0 +1,18 @@
+<h1>Show Admin</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal KomplenWeb.AdminLive.FormComponent,
+    id: @admin.id,
+    title: @page_title,
+    action: @live_action,
+    admin: @admin,
+    return_to: Routes.admin_show_path(@socket, :show, @admin) %>
+<% end %>
+
+<ul>
+  <li><%= @admin.id %> <%= @admin.user.username %></li>
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.admin_show_path(@socket, :edit, @admin), class: "button" %></span> |
+<button phx-click="remove_admin">Remove admin</button>
+<span><%= live_redirect "Back", to: Routes.admin_index_path(@socket, :index) %></span>

@@ -14,7 +14,7 @@ defmodule KomplenWeb.SessionController do
         |> put_flash(:info, "Welcome #{name}")
         |> put_session(:user_id, user.id)
         |> configure_session(renew: true)
-        |> redirect(to: "/")
+        |> redirect(to: Routes.complaint_index_path(conn, :index))
 
       {:error, :unauthorized} ->
         conn

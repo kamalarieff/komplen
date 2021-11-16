@@ -20,6 +20,7 @@ defmodule Komplen.Accounts do
   """
   def list_users do
     Repo.all(User)
+    |> Repo.preload(:admin)
   end
 
   @doc """
@@ -36,7 +37,7 @@ defmodule Komplen.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id), do: Repo.get!(User, id) |> Repo.preload(:admin)
 
   @doc """
   Creates a user.

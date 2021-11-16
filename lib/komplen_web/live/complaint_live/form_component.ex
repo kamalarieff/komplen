@@ -35,10 +35,11 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
     case Complaints.update_complaint(socket.assigns.complaint, complaint_params) do
       {:ok, complaint} ->
         KomplenWeb.Endpoint.broadcast(@complaints_topic, "update", complaint)
+        KomplenWeb.Endpoint.broadcast(topic(socket.assigns.complaint.id), "update", complaint)
         {:noreply,
          socket
          |> put_flash(:info, "Complaint updated successfully")
-         |> push_patch(to: socket.assigns.return_to)}
+         |> push_redirect(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
@@ -59,4 +60,6 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
+
+  defp topic(id), do: "complaint:#{id}"
 end

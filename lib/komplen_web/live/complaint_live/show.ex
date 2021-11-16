@@ -67,6 +67,11 @@ defmodule KomplenWeb.ComplaintLive.Show do
   end
 
   @impl true
+  def handle_info(%{event: "update", payload: complaint}, socket) do
+    {:noreply, assign(socket, :complaint, complaint)}
+  end
+
+  @impl true
   def handle_info(%{event: "add_vouch"}, socket) do
     {:noreply, update(socket, :num_vouches, fn x -> x + 1 end)}
   end

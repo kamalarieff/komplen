@@ -35,12 +35,19 @@ defmodule KomplenWeb.ComplaintLive.Index do
 
   @impl true
   def handle_info(%{event: "update", payload: complaint}, socket) do
+    # {:noreply,
+    #  update(socket, :complaints, fn complaints ->
+    #    Enum.map(complaints, fn x -> 
+    #      if x.id == complaint.id, do: complaint, else: x end
+    #    )
+    #  end)}
+    # TODO: this is bad UI because whoever is on page will see the complaints jump around
+    # I think it's better if you don't update this page as frequent
+    # a better UI is to show a notification when a new complaint has arrived
     {:noreply,
-     update(socket, :complaints, fn complaints ->
-       Enum.map(complaints, fn x -> 
-         if x.id == complaint.id, do: complaint, else: x end
-       )
-     end)}
+     socket
+     |> push_redirect(to: Routes.complaint_index_path(socket, :index))}
+  end
 
   @impl true
   def handle_event("search", %{"value" => value}, socket) when value == "" do

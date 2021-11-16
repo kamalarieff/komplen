@@ -28,8 +28,21 @@ defmodule KomplenWeb.Router do
     live "/complaints/:id", ComplaintLive.Show, :show
     live "/complaints/:id/show/edit", ComplaintLive.Show, :edit
 
-    resources "/users", UserController
-    resources "/admins", AdminController
+    # resources "/users", UserController
+    live "/users", UserLive.Index, :index
+    live "/users/new", UserLive.Index, :new
+    live "/users/:id/edit", UserLive.Index, :edit
+
+    live "/users/:id", UserLive.Show, :show
+    live "/users/:id/show/edit", UserLive.Show, :edit
+
+    #j resources "/admins", AdminController
+    live "/admins", AdminLive.Index, :index
+    live "/admins/new", AdminLive.Index, :new
+    live "/admins/:id/edit", AdminLive.Index, :edit
+
+    live "/admins/:id", AdminLive.Show, :show
+    live "/admins/:id/show/edit", AdminLive.Show, :edit
     resources "/sessions", SessionController, only: [:new, :create, :delete], singleton: true
 
     pipe_through :auth

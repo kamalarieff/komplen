@@ -1,0 +1,35 @@
+<h1>Listing Admins</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal KomplenWeb.AdminLive.FormComponent,
+    id: @admin.id || :new,
+    title: @page_title,
+    action: @live_action,
+    admin: @admin,
+    return_to: Routes.admin_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>User ID</th>
+      <th>Username</th>
+    </tr>
+  </thead>
+  <tbody id="admins">
+    <%= for admin <- @admins do %>
+      <tr id={"admin-#{admin.id}"}>
+        <td><%= admin.id %></td>
+        <td><%= admin.user.username %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.admin_show_path(@socket, :show, admin) %></span>
+          <span><%= live_patch "Edit", to: Routes.admin_index_path(@socket, :edit, admin) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: admin.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Admin", to: Routes.admin_index_path(@socket, :new) %></span>
