@@ -27,8 +27,10 @@
   </li>
 </ul>
 
+Status: <%= @status %>
 <%= if not is_nil(@admin_id) do %>
-Status: In Progress
+  <button phx-click="change_status" phx-value-to_status="done">Done</button>
+  <button phx-click="change_status" phx-value-to_status="in progress">In Progress</button>
 <% end %>
 
 <%= unless @live_action in [:edit] do %>

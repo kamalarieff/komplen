@@ -11,7 +11,8 @@ defmodule KomplenWeb.ComplaintLive.Show do
     {:ok,
      socket
      |> assign(:user_id, user_id)
-     |> assign(:admin_id, admin_id)}
+     |> assign(:admin_id, admin_id)
+     |> assign(:status, "In Progress")}
   end
 
   @impl true
@@ -72,6 +73,24 @@ defmodule KomplenWeb.ComplaintLive.Show do
   end
 
   @impl true
+  def handle_event("change_status", %{"to_status" => to_status}, socket)
+      when to_status == "done" do
+    complaint_topic = topic(socket.assigns.complaint.id)
+    KomplenWeb.Endpoint.broadcast(complaint_topic, "change_status", :done)
+
+    notify_status_change(:done, socket)
+  end
+
+  @impl true
+  def handle_event("change_status", %{"to_status" => to_status}, socket)
+      when to_status == "in progress" do
+    complaint_topic = topic(socket.assigns.complaint.id)
+    KomplenWeb.Endpoint.broadcast(complaint_topic, "change_status", :in_progress)
+
+    notify_status_change(:in_progress, socket)
+  end
+
+  @impl true
   def handle_info(%{event: "update", payload: complaint}, socket) do
     {:noreply, assign(socket, :complaint, complaint)}
   end
@@ -86,8 +105,27 @@ defmodule KomplenWeb.ComplaintLive.Show do
     {:noreply, update(socket, :num_vouches, fn x -> x - 1 end)}
   end
 
+  @impl true
+  def handle_info(%{event: "change_status", payload: payload}, socket) do
+    notify_status_change(payload, socket)
+  end
+
   defp topic(id), do: "complaint:#{id}"
 
   defp page_title(:show), do: "Show Complaint"
   defp page_title(:edit), do: "Edit Complaint"
+
+  defp notify_status_change(:done, socket) do
+    {:noreply,
+     socket
+     |> assign(:status, "Done")
+     |> put_flash(:info, "Status changed to Done")}
+  end
+
+  defp notify_status_change(:in_progress, socket) do
+    {:noreply,
+     socket
+     |> assign(:status, "In Progress")
+     |> put_flash(:info, "Status changed to In Progress")}
+  end
 end
