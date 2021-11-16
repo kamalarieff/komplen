@@ -227,7 +227,7 @@ defmodule Komplen.Accounts do
       from u in User,
         where: u.username == ^username
 
-    case Repo.one(query) do
+    case Repo.one(query) |> Repo.preload(:admin) do
       %User{} = user -> {:ok, user}
       nil -> {:error, :unauthorized}
     end

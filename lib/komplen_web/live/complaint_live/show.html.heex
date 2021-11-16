@@ -27,6 +27,10 @@
   </li>
 </ul>
 
+<%= if not is_nil(@admin_id) do %>
+Status: In Progress
+<% end %>
+
 <%= unless @live_action in [:edit] do %>
   <span><%= live_patch "Edit", to: Routes.complaint_show_path(@socket, :edit, @complaint), class: "button" %></span> |
 <% end %>

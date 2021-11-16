@@ -6,7 +6,12 @@ defmodule KomplenWeb.ComplaintLive.Show do
   @impl true
   def mount(_params, session, socket) do
     user_id = Map.get(session, "user_id")
-    {:ok, assign(socket, :user_id, user_id)}
+    admin_id = Map.get(session, "admin_id")
+
+    {:ok,
+     socket
+     |> assign(:user_id, user_id)
+     |> assign(:admin_id, admin_id)}
   end
 
   @impl true
