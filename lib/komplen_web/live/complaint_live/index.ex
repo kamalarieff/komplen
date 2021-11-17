@@ -61,6 +61,13 @@ defmodule KomplenWeb.ComplaintLive.Index do
     {:noreply, assign(socket, search_term: value, complaints: complaints)}
   end
 
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    complaint = Complaints.get_complaint!(id)
+    {:ok, _} = Complaints.delete_complaint(complaint)
+    {:noreply, assign(socket, complaints: list_complaints())}
+  end
+
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Complaint")

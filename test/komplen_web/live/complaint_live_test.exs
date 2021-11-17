@@ -2,14 +2,16 @@ defmodule KomplenWeb.ComplaintLiveTest do
   use KomplenWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import Komplen.ComplaintsFixtures
+  import Komplen.{ComplaintsFixtures, AccountsFixtures}
 
-  @create_attrs %{}
-  @update_attrs %{}
-  @invalid_attrs %{}
+  @create_user_attrs %{"username" => "some username"}
+  @create_attrs %{"body" => "some body", "title" => "some title"}
+  @update_attrs %{"body" => "updated body"}
+  @invalid_attrs %{"body" => ""}
 
   defp create_complaint(_) do
-    complaint = complaint_fixture()
+    user = user_fixture(@create_user_attrs)
+    complaint = complaint_fixture(Map.put(@create_attrs, "user_id", user.id))
     %{complaint: complaint}
   end
 
@@ -22,7 +24,11 @@ defmodule KomplenWeb.ComplaintLiveTest do
       assert html =~ "Listing Complaints"
     end
 
-    test "saves new complaint", %{conn: conn} do
+    test "saves new complaint", %{conn: conn, complaint: complaint} do
+      conn =
+        conn
+        |> init_test_session(user_id: complaint.user_id)
+
       {:ok, index_live, _html} = live(conn, Routes.complaint_index_path(conn, :index))
 
       assert index_live |> element("a", "New Complaint") |> render_click() =~
