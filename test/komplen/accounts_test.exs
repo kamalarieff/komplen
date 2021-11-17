@@ -6,9 +6,9 @@ defmodule Komplen.AccountsTest do
   describe "users" do
     alias Komplen.Accounts.User
 
-    @valid_attrs %{name: "some name", username: "some username"}
-    @update_attrs %{name: "some updated name", username: "some updated username"}
-    @invalid_attrs %{name: nil, username: nil}
+    @valid_attrs %{username: "some username"}
+    @update_attrs %{username: "some updated username"}
+    @invalid_attrs %{username: nil}
 
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =
@@ -31,7 +31,6 @@ defmodule Komplen.AccountsTest do
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.name == "some name"
       assert user.username == "some username"
     end
 
@@ -42,21 +41,19 @@ defmodule Komplen.AccountsTest do
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       assert {:ok, %User{} = user} = Accounts.update_user(user, @update_attrs)
-      assert user.name == "some updated name"
       assert user.username == "some updated username"
     end
 
-    test "authenticate_by_name/1 and authenticate_by_id/1 with valid data returns user" do
+    test "authenticate_by_username/1 and authenticate_by_id/1 with valid data returns user" do
       user = user_fixture()
-      assert {:ok, %User{} = user} = Accounts.authenticate_by_name("some name")
-      assert user.name == "some name"
+      assert {:ok, %User{} = user} = Accounts.authenticate_by_username("some username")
       assert user.username == "some username"
       assert {:ok, %User{} = user} = Accounts.authenticate_by_id(user.id)
     end
 
     # this test can probably be deleted because it is testing for implementation details
-    test "authenticate_by_name/1 with invalid data returns error" do
-      assert {:error, :missing_name} = Accounts.authenticate_by_name(nil)
+    test "authenticate_by_username/1 with invalid data returns error" do
+      assert {:error, :missing_name} = Accounts.authenticate_by_username(nil)
     end
 
     # this test can probably be deleted because it is testing for implementation details
@@ -125,7 +122,8 @@ defmodule Komplen.AccountsTest do
     end
 
     test "create_admin/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(@invalid_attrs)
+      assert {:ok, user} = Accounts.create_user(@valid_user_attrs)
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(user, @invalid_attrs)
     end
 
     test "update_admin/2 with valid data updates the admin" do
