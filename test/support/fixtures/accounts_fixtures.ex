@@ -20,10 +20,11 @@ defmodule Komplen.AccountsFixtures do
   Generate a admin.
   """
   def admin_fixture(attrs \\ %{}) do
+    user = user_fixture(%{"username" => "some username"})
     {:ok, admin} =
       attrs
       |> Enum.into(%{})
-      |> Komplen.Accounts.create_admin()
+      |> then(&Komplen.Accounts.create_admin(user, &1))
 
     admin
   end
