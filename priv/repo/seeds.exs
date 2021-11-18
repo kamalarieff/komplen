@@ -13,22 +13,48 @@
 # YOGHIRT Got the idea of seeding the database from here
 # https://youtu.be/1YzAztAMgP4?t=2871
 # https://elixirforum.com/t/seeding-database-with-relationships/13240/2
-alias Komplen.Accounts.{User, Profile}
-alias Komplen.Complaints.Complaint
+alias Komplen.Accounts.{User, Profile, Admin}
+alias Komplen.Complaints.{Complaint, Vouch}
 
-user =
+user1 =
   Komplen.Repo.insert!(%User{
-    username: "seed username",
+    username: "kamal",
     profile: %Profile{
-      name: "seed name",
-      phone: "seed phone",
-      email: "seed email",
-      ic_number: "seed ic_number"
+      name: "kamal",
+      phone: "0123456789",
+      email: "abc@gmail.com",
+      ic_number: "000000000000"
     }
   })
 
-Komplen.Repo.insert!(%Complaint{
-  body: "seed body",
-  title: "seed title",
-  user_id: user.id
+user2 =
+  Komplen.Repo.insert!(%User{
+    username: "arieff",
+    profile: %Profile{
+      name: "arieff",
+      phone: "9876543210",
+      email: "zyx@gmail.com",
+      ic_number: "111111111111"
+    }
+  })
+
+Komplen.Repo.insert!(%Admin{
+  user: user1
+})
+
+complaint =
+  Komplen.Repo.insert!(%Complaint{
+    body: "seed body",
+    title: "seed title",
+    user_id: user1.id
+  })
+
+Komplen.Repo.insert!(%Vouch{
+  user_id: user1.id,
+  complaint_id: complaint.id
+})
+
+Komplen.Repo.insert!(%Vouch{
+  user_id: user2.id,
+  complaint_id: complaint.id
 })
