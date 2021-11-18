@@ -33,7 +33,7 @@ Status: <%= @complaint.status %>
   <button phx-click="change_status" phx-value-to_status="done">Done</button>
 <% end %>
 
-<%= unless @live_action in [:edit] do %>
+<%= if @live_action not in [:edit] and @complaint.user_id == @user_id do %>
   <span><%= live_patch "Edit", to: Routes.complaint_show_path(@socket, :edit, @complaint), class: "button" %></span> |
 <% end %>
 
