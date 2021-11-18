@@ -76,18 +76,52 @@ defmodule KomplenWeb.ComplaintLive.Show do
   def handle_event("change_status", %{"to_status" => to_status}, socket)
       when to_status == "done" do
     complaint_topic = topic(socket.assigns.complaint.id)
-    KomplenWeb.Endpoint.broadcast(complaint_topic, "change_status", :done)
+    res = Complaints.update_complaint(socket.assigns.complaint, %{"status" => "done"})
 
-    notify_status_change(:done, socket)
+    case res do
+      {:ok, complaint} ->
+        KomplenWeb.Endpoint.broadcast(complaint_topic, "change_status", %{
+          status: :done,
+          complaint: complaint
+        })
+
+        notify_status_change(
+          :done,
+          socket
+          |> assign(:complaint, complaint)
+        )
+
+      {:error, _error} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Invalid status")}
+    end
   end
 
   @impl true
   def handle_event("change_status", %{"to_status" => to_status}, socket)
       when to_status == "in progress" do
     complaint_topic = topic(socket.assigns.complaint.id)
-    KomplenWeb.Endpoint.broadcast(complaint_topic, "change_status", :in_progress)
+    res = Complaints.update_complaint(socket.assigns.complaint, %{"status" => "in progress"})
 
-    notify_status_change(:in_progress, socket)
+    case res do
+      {:ok, complaint} ->
+        KomplenWeb.Endpoint.broadcast(complaint_topic, "change_status", %{
+          status: :in_progress,
+          complaint: complaint
+        })
+
+        notify_status_change(
+          :in_progress,
+          socket
+          |> assign(:complaint, complaint)
+        )
+
+      {:error, _error} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Invalid status")}
+    end
   end
 
   @impl true
@@ -107,7 +141,11 @@ defmodule KomplenWeb.ComplaintLive.Show do
 
   @impl true
   def handle_info(%{event: "change_status", payload: payload}, socket) do
-    notify_status_change(payload, socket)
+    notify_status_change(
+      payload.status,
+      socket
+      |> assign(:complaint, payload.complaint)
+    )
   end
 
   defp topic(id), do: "complaint:#{id}"

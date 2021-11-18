@@ -2,6 +2,7 @@ defmodule KomplenWeb.ComplaintLiveTest do
   use KomplenWeb.ConnCase
 
   import Phoenix.LiveViewTest
+  import Phoenix.ChannelTest
   import Komplen.{ComplaintsFixtures, AccountsFixtures}
 
   @create_user_attrs %{"username" => "some username"}
@@ -106,6 +107,22 @@ defmodule KomplenWeb.ComplaintLiveTest do
         |> follow_redirect(conn, Routes.complaint_show_path(conn, :show, complaint))
 
       assert html =~ "Complaint updated successfully"
+    end
+
+    test "updates status", %{conn: conn, complaint: complaint} do
+      conn =
+        conn
+        |> init_test_session(admin_id: 1)
+
+      {:ok, show_live, _html} = live(conn, Routes.complaint_show_path(conn, :show, complaint))
+
+      assert show_live |> element("button", "In Progress") |> render_click() =~
+               "Status changed to In Progress"
+      assert_broadcast "change_status", %{complaint: complaint}
+
+      assert show_live |> element("button", "Done") |> render_click() =~
+               "Status changed to Done"
+      assert_broadcast "change_status", %{complaint: complaint}
     end
   end
 end

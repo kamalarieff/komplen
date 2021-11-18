@@ -27,10 +27,10 @@
   </li>
 </ul>
 
-Status: <%= @status %>
+Status: <%= @complaint.status %>
 <%= if not is_nil(@admin_id) do %>
-  <button phx-click="change_status" phx-value-to_status="done">Done</button>
   <button phx-click="change_status" phx-value-to_status="in progress">In Progress</button>
+  <button phx-click="change_status" phx-value-to_status="done">Done</button>
 <% end %>
 
 <%= unless @live_action in [:edit] do %>
