@@ -1,0 +1,1 @@
+alias Komplen.{Accounts, Complaints}
