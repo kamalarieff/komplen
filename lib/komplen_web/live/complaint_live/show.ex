@@ -1,7 +1,7 @@
 defmodule KomplenWeb.ComplaintLive.Show do
   use KomplenWeb, :live_view
 
-  alias Komplen.Complaints
+  alias Komplen.{Accounts, Complaints}
 
   @impl true
   def mount(_params, session, socket) do
@@ -51,11 +51,22 @@ defmodule KomplenWeb.ComplaintLive.Show do
          |> redirect(to: Routes.session_path(socket, :new))}
 
       _ ->
-        {:ok, vouch} =
-          Complaints.add_vouch(%{user_id: socket.assigns.user_id, complaint_id: complaint_id})
+        profile = Accounts.get_profile(%{user_id: socket.assigns.user_id})
 
-        KomplenWeb.Endpoint.broadcast(complaint_topic, "add_vouch", nil)
-        {:noreply, assign(socket, :vouch_id, vouch.id)}
+        case profile do
+          nil ->
+            {:noreply,
+             socket
+             |> put_flash(:error, "You must fill up your profile")
+             |> redirect(to: Routes.profile_path(socket, :edit))}
+
+          _ ->
+            {:ok, vouch} =
+              Complaints.add_vouch(%{user_id: socket.assigns.user_id, complaint_id: complaint_id})
+
+            KomplenWeb.Endpoint.broadcast(complaint_topic, "add_vouch", nil)
+            {:noreply, assign(socket, :vouch_id, vouch.id)}
+        end
     end
   end
 
@@ -72,9 +83,10 @@ defmodule KomplenWeb.ComplaintLive.Show do
     {:noreply, assign(socket, :vouch_id, nil)}
   end
 
+  # YOGHIRT you can do pattern matching this way instead of using guards
+  # https://sourcegraph.com/github.com/plausible/analytics/-/blob/lib/plausible/stats/clickhouse.ex
   @impl true
-  def handle_event("change_status", %{"to_status" => to_status}, socket)
-      when to_status == "done" do
+  def handle_event("change_status", %{"to_status" => "done"}, socket) do
     complaint_topic = topic(socket.assigns.complaint.id)
     res = Complaints.update_complaint(socket.assigns.complaint, %{"status" => "done"})
 
@@ -99,8 +111,7 @@ defmodule KomplenWeb.ComplaintLive.Show do
   end
 
   @impl true
-  def handle_event("change_status", %{"to_status" => to_status}, socket)
-      when to_status == "in progress" do
+  def handle_event("change_status", %{"to_status" => "in progress"}, socket) do
     complaint_topic = topic(socket.assigns.complaint.id)
     res = Complaints.update_complaint(socket.assigns.complaint, %{"status" => "in progress"})
 

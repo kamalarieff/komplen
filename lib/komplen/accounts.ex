@@ -278,34 +278,17 @@ defmodule Komplen.Accounts do
   @doc """
   Gets a single profile.
 
-  Raises `Ecto.NoResultsError` if the Profile does not exist.
-
   ## Examples
 
-      iex> get_profile!(123)
+      iex> get_profile(123)
       %Profile{}
 
-      iex> get_profile!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_profile!(id), do: Repo.get!(Profile, id)
-
-  @doc """
-  Gets a single profile via user id.
-
-  Raises `Ecto.NoResultsError` if the Profile does not exist.
-
-  ## Examples
-
-      iex> get_profile_by_user_id(123)
-      %Profile{}
-
-      iex> get_profile_by_user_id(456)
+      iex> get_profile(456)
       nil
 
   """
-  def get_profile_by_user_id(id), do: Repo.get_by(Profile, user_id: id)
+  def get_profile(%{user_id: user_id}), do: Repo.get_by(Profile, user_id: user_id)
+  def get_profile(id), do: Repo.get(Profile, id)
 
   @doc """
   Creates a profile.

@@ -183,10 +183,10 @@ defmodule Komplen.AccountsTest do
       assert Accounts.list_profiles() == [profile]
     end
 
-    test "get_profile!/1 returns the profile with given id" do
+    test "get_profile/1 returns the profile with given id" do
       user = user_fixture()
       profile = profile_fixture(user)
-      assert Accounts.get_profile!(profile.id) == profile
+      assert Accounts.get_profile(profile.id) == profile
     end
 
     test "create_profile/1 with valid data creates a profile" do
@@ -213,14 +213,14 @@ defmodule Komplen.AccountsTest do
       user = user_fixture()
       profile = profile_fixture(user)
       assert {:error, %Ecto.Changeset{}} = Accounts.update_profile(profile, @invalid_attrs)
-      assert profile == Accounts.get_profile!(profile.id)
+      assert profile == Accounts.get_profile(profile.id)
     end
 
     test "delete_profile/1 deletes the profile" do
       user = user_fixture()
       profile = profile_fixture(user)
       assert {:ok, %Profile{}} = Accounts.delete_profile(profile)
-      assert_raise Ecto.NoResultsError, fn -> Accounts.get_profile!(profile.id) end
+      assert nil == Accounts.get_profile(profile.id)
     end
 
     @tag :individual_test
