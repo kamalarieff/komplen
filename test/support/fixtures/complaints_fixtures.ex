@@ -17,4 +17,18 @@ defmodule Komplen.ComplaintsFixtures do
 
     complaint
   end
+
+  @doc """
+  Generate a incident.
+  """
+  def incident_fixture(attrs \\ %{}) do
+    {:ok, incident} =
+      attrs
+      |> Enum.into(%{
+        title: "some title"
+      })
+      |> Komplen.Complaints.create_incident()
+
+    incident
+  end
 end

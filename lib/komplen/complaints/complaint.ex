@@ -9,6 +9,7 @@ defmodule Komplen.Complaints.Complaint do
     field :title, :string
     field :status, :string
     belongs_to :user, User
+    has_many :incident, Komplen.Complaints.Incident
 
     timestamps()
   end

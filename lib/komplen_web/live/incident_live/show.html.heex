@@ -1,0 +1,22 @@
+<h1>Show Incident</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal KomplenWeb.IncidentLive.FormComponent,
+    id: @incident.id,
+    title: @page_title,
+    action: @live_action,
+    incident: @incident,
+    return_to: Routes.incident_show_path(@socket, :show, @incident) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @incident.title %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.incident_show_path(@socket, :edit, @incident), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.incident_index_path(@socket, :index) %></span>

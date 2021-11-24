@@ -1,0 +1,35 @@
+<h1>Listing Incidents</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal KomplenWeb.IncidentLive.FormComponent,
+    id: @incident.id || :new,
+    title: @page_title,
+    action: @live_action,
+    incident: @incident,
+    return_to: Routes.incident_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="incidents">
+    <%= for incident <- @incidents do %>
+      <tr id={"incident-#{incident.id}"}>
+        <td><%= incident.title %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.incident_show_path(@socket, :show, incident) %></span>
+          <span><%= live_patch "Edit", to: Routes.incident_index_path(@socket, :edit, incident) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: incident.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Incident", to: Routes.incident_index_path(@socket, :new) %></span>

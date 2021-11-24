@@ -162,4 +162,58 @@ defmodule Komplen.ComplaintsTest do
       assert_raise Ecto.NoResultsError, fn -> Complaints.get_vouch!(vouch.id) end
     end
   end
+
+  describe "incidents" do
+    alias Komplen.Complaints.Incident
+
+    import Komplen.ComplaintsFixtures
+
+    @invalid_attrs %{title: nil}
+
+    test "list_incidents/0 returns all incidents" do
+      incident = incident_fixture()
+      assert Complaints.list_incidents() == [incident]
+    end
+
+    test "get_incident!/1 returns the incident with given id" do
+      incident = incident_fixture()
+      assert Complaints.get_incident!(incident.id) == incident
+    end
+
+    test "create_incident/1 with valid data creates a incident" do
+      valid_attrs = %{title: "some title"}
+
+      assert {:ok, %Incident{} = incident} = Complaints.create_incident(valid_attrs)
+      assert incident.title == "some title"
+    end
+
+    test "create_incident/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Complaints.create_incident(@invalid_attrs)
+    end
+
+    test "update_incident/2 with valid data updates the incident" do
+      incident = incident_fixture()
+      update_attrs = %{title: "some updated title"}
+
+      assert {:ok, %Incident{} = incident} = Complaints.update_incident(incident, update_attrs)
+      assert incident.title == "some updated title"
+    end
+
+    test "update_incident/2 with invalid data returns error changeset" do
+      incident = incident_fixture()
+      assert {:error, %Ecto.Changeset{}} = Complaints.update_incident(incident, @invalid_attrs)
+      assert incident == Complaints.get_incident!(incident.id)
+    end
+
+    test "delete_incident/1 deletes the incident" do
+      incident = incident_fixture()
+      assert {:ok, %Incident{}} = Complaints.delete_incident(incident)
+      assert_raise Ecto.NoResultsError, fn -> Complaints.get_incident!(incident.id) end
+    end
+
+    test "change_incident/1 returns a incident changeset" do
+      incident = incident_fixture()
+      assert %Ecto.Changeset{} = Complaints.change_incident(incident)
+    end
+  end
 end

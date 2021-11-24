@@ -42,4 +42,5 @@ Status: <%= @complaint.status %>
 <% else %>
   <button phx-click="add_vouch" phx-value-complaint_id={@complaint.id}>Vouch</button>
 <% end %>
+<span><%= live_patch "Add incident", to: Routes.incident_index_path(@socket, :new, %{complaint_id: @complaint.id}), class: "button" %></span> |
 <span><%= live_redirect "Back", to: Routes.complaint_index_path(@socket, :index) %></span>
