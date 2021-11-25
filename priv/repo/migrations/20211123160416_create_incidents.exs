@@ -12,6 +12,5 @@ defmodule Komplen.Repo.Migrations.CreateIncidents do
 
     create index(:incidents, [:user_id])
     create index(:incidents, [:complaint_id])
-    create unique_index(:incidents, [:user_id, :complaint_id], name: :unique_user_incident)
   end
 end

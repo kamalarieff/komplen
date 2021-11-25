@@ -5,13 +5,27 @@ defmodule KomplenWeb.IncidentLive.Index do
   alias Komplen.Complaints.Incident
 
   @impl true
-  def mount(_params, session, socket) do
+  def mount(%{"complaint_id" => complaint_id}, session, socket) do
     user_id = Map.get(session, "user_id")
 
     {:ok,
      socket
-     |> assign(:incidents, list_incidents())
-     |> assign(:user_id, user_id)}
+     |> assign(:incidents, list_incidents(complaint_id))
+     |> assign(:user_id, user_id)
+     |> assign(:complaint_id, complaint_id)}
+  end
+
+  @impl true
+  def handle_params(params, _url, socket) when socket.assigns.live_action in [:edit, :new] do
+    case is_nil(socket.assigns.user_id) do
+      true ->
+        {:noreply,
+         socket
+         |> redirect(to: Routes.session_path(socket, :new))}
+
+      _ ->
+        {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    end
   end
 
   @impl true
@@ -45,10 +59,10 @@ defmodule KomplenWeb.IncidentLive.Index do
     incident = Complaints.get_incident!(id)
     {:ok, _} = Complaints.delete_incident(incident)
 
-    {:noreply, assign(socket, :incidents, list_incidents())}
+    {:noreply, assign(socket, :incidents, list_incidents(incident.complaint_id))}
   end
 
-  defp list_incidents do
-    Complaints.list_incidents()
+  defp list_incidents(complaint_id) do
+    Complaints.list_incidents(%{complaint_id: complaint_id})
   end
 end

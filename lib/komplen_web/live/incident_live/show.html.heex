@@ -6,7 +6,7 @@
     title: @page_title,
     action: @live_action,
     incident: @incident,
-    return_to: Routes.incident_show_path(@socket, :show, @incident) %>
+    return_to: Routes.complaint_show_path(@socket, :show, @incident.complaint_id) %>
 <% end %>
 
 <ul>
@@ -18,5 +18,5 @@
 
 </ul>
 
-<span><%= live_patch "Edit", to: Routes.incident_show_path(@socket, :edit, @incident), class: "button" %></span> |
-<span><%= live_redirect "Back", to: Routes.incident_index_path(@socket, :index) %></span>
+<span><%= live_patch "Edit", to: Routes.incident_show_path(@socket, :edit, @incident.complaint_id, @incident.id), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.complaint_show_path(@socket, :show, @incident.complaint_id) %></span>

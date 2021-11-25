@@ -28,6 +28,10 @@ defmodule KomplenWeb.Router do
     live "/complaints/:id", ComplaintLive.Show, :show
     live "/complaints/:id/show/edit", ComplaintLive.Show, :edit
 
+    live "/complaints/:complaint_id/incidents/new", IncidentLive.Index, :new
+    live "/complaints/:complaint_id/incidents/:incident_id/edit", IncidentLive.Index, :edit
+    live "/complaints/:complaint_id/incidents/:incident_id/show/edit", IncidentLive.Show, :edit
+
     # resources "/users", UserController
     live "/users", UserLive.Index, :index
     live "/users/new", UserLive.Index, :new
@@ -45,12 +49,12 @@ defmodule KomplenWeb.Router do
     live "/admins/:id/show/edit", AdminLive.Show, :edit
     resources "/sessions", SessionController, only: [:new, :create, :delete], singleton: true
 
-    live "/incidents", IncidentLive.Index, :index
-    live "/incidents/new", IncidentLive.Index, :new
-    live "/incidents/:id/edit", IncidentLive.Index, :edit
-
-    live "/incidents/:id", IncidentLive.Show, :show
-    live "/incidents/:id/show/edit", IncidentLive.Show, :edit
+    # live "/incidents", IncidentLive.Index, :index
+    # live "/incidents/new", IncidentLive.Index, :new
+    # live "/incidents/:id/edit", IncidentLive.Index, :edit
+    #
+    # live "/incidents/:id", IncidentLive.Show, :show
+    # live "/incidents/:id/show/edit", IncidentLive.Show, :edit
 
     pipe_through :auth
     # resources "/complaints", ComplaintController, except: [:index, :show]

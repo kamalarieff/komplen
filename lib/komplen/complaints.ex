@@ -134,6 +134,7 @@ defmodule Komplen.Complaints do
   """
   def search_complaints(term) do
     query = from c in Complaint, where: c.title == ^term
+
     Repo.all(query)
     |> Repo.preload(:user)
   end
@@ -263,6 +264,10 @@ defmodule Komplen.Complaints do
       [%Incident{}, ...]
 
   """
+  def list_incidents(%{complaint_id: complaint_id}) do
+    Repo.all(from i in Incident, where: i.complaint_id == ^complaint_id)
+  end
+
   def list_incidents do
     Repo.all(Incident)
   end

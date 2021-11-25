@@ -6,7 +6,7 @@
     title: @page_title,
     action: @live_action,
     incident: @incident,
-    return_to: Routes.incident_index_path(@socket, :index) %>
+    return_to: Routes.complaint_show_path(@socket, :show, @complaint_id) %>
 <% end %>
 
 <table>
@@ -14,7 +14,7 @@
     <tr>
       <th>Title</th>
 
-      <th></th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody id="incidents">
@@ -23,8 +23,7 @@
         <td><%= incident.title %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.incident_show_path(@socket, :show, incident) %></span>
-          <span><%= live_patch "Edit", to: Routes.incident_index_path(@socket, :edit, incident) %></span>
+          <span><%= live_patch "Edit", to: Routes.incident_show_path(@socket, :edit, incident.complaint_id, incident.id) %></span>
           <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: incident.id, data: [confirm: "Are you sure?"] %></span>
         </td>
       </tr>
@@ -32,4 +31,3 @@
   </tbody>
 </table>
 
-<span><%= live_patch "New Incident", to: Routes.incident_index_path(@socket, :new) %></span>
