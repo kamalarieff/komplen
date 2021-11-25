@@ -3,12 +3,14 @@ defmodule Komplen.Complaints.Complaint do
   import Ecto.Changeset
 
   alias Komplen.Accounts.User
+  alias Komplen.Chat.Room
 
   schema "complaints" do
     field :body, :string
     field :title, :string
     field :status, :string
     belongs_to :user, User
+    has_one :room, Room
 
     timestamps()
   end

@@ -1,1 +1,2 @@
-alias Komplen.{Accounts, Complaints}
+alias Komplen.{Accounts, Complaints, Chat}
+alias Komplen.Repo

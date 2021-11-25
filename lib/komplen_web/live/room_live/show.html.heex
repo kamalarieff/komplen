@@ -1,0 +1,32 @@
+<h1>Show Room</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal KomplenWeb.RoomLive.FormComponent,
+    id: @room.id,
+    title: @page_title,
+    action: @live_action,
+    room: @room,
+    return_to: Routes.room_show_path(@socket, :show, @room) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Room:</strong>
+    <%= @room.id %>
+  </li>
+
+</ul>
+
+<h2>Messages</h2>
+
+<ul>
+<%= for message <- @room.messages do %>
+  <li>
+    <span><%= message.inserted_at %>: <%= message.message %></span> by <span><%= message.user.username %></span>
+  </li>
+<% end %>
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.room_show_path(@socket, :edit, @room), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.room_index_path(@socket, :index) %></span>

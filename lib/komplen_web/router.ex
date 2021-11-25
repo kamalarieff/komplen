@@ -45,6 +45,13 @@ defmodule KomplenWeb.Router do
     live "/admins/:id/show/edit", AdminLive.Show, :edit
     resources "/sessions", SessionController, only: [:new, :create, :delete], singleton: true
 
+    live "/rooms", RoomLive.Index, :index
+    live "/rooms/new", RoomLive.Index, :new
+    live "/rooms/:id/edit", RoomLive.Index, :edit
+
+    live "/rooms/:id", RoomLive.Show, :show
+    live "/rooms/:id/show/edit", RoomLive.Show, :edit
+
     pipe_through :auth
     # resources "/complaints", ComplaintController, except: [:index, :show]
     resources "/profile", ProfileController, only: [:show, :edit, :update], singleton: true

@@ -58,3 +58,13 @@ Komplen.Repo.insert!(%Vouch{
   user_id: user2.id,
   complaint_id: complaint.id
 })
+
+room = Komplen.Repo.insert!(%Komplen.Chat.Room{
+  complaint_id: complaint.id
+})
+
+Komplen.Repo.insert!(%Komplen.Chat.Message{
+  message: "first message",
+  user_id: user1.id,
+  room_id: room.id
+})
