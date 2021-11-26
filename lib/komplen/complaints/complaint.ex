@@ -19,9 +19,8 @@ defmodule Komplen.Complaints.Complaint do
   def changeset(complaint, attrs) do
     complaint
     |> cast(attrs, [:title, :body, :status])
-    |> validate_required([:title, :body])
-    |> validate_required([:user_id])
+    |> validate_required([:title, :body, :user_id])
     |> check_constraint(:status, name: :allowed_status)
-    |> Ecto.Changeset.assoc_constraint(:user)
+    |> assoc_constraint(:user)
   end
 end

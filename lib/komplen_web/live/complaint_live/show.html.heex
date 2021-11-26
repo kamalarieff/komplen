@@ -42,4 +42,6 @@ Status: <%= @complaint.status %>
 <% else %>
   <button phx-click="add_vouch" phx-value-complaint_id={@complaint.id}>Vouch</button>
 <% end %>
+
+<%= link "Chatroom", to: Routes.room_show_path(@socket, :show, @complaint.room.id) %>
 <span><%= live_redirect "Back", to: Routes.complaint_index_path(@socket, :index) %></span>

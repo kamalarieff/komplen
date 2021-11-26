@@ -42,6 +42,7 @@ defmodule Komplen.Complaints do
     Complaint
     |> Repo.get!(id)
     |> Repo.preload(:user)
+    |> Repo.preload(:room)
   end
 
   @doc """
