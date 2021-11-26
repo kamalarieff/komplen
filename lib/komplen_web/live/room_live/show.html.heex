@@ -28,5 +28,24 @@
 <% end %>
 </ul>
 
+<%= unless is_nil(@user_id) do %>
+<.form
+  let={f}
+  for={@chat_changeset}
+  id="message-form"
+  phx-change="validate_chat"
+  phx-submit="save_chat">
+
+  <%= label f, :message %>
+  <%= text_input f, :message %>
+  <%= error_tag f, :message %>
+
+  <div>
+    <%= submit "Save", phx_disable_with: "Saving..." %>
+  </div>
+</.form>
+<% end %>
+
+
 <span><%= live_patch "Edit", to: Routes.room_show_path(@socket, :edit, @room), class: "button" %></span> |
 <span><%= live_redirect "Back", to: Routes.room_index_path(@socket, :index) %></span>
