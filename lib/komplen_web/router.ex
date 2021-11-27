@@ -80,7 +80,7 @@ defmodule KomplenWeb.Router do
 
           {:ok, user} ->
             conn
-            |> put_session("user", user)
+            |> put_session("user_id", user.id)
         end
     end
   end
