@@ -1,13 +1,16 @@
 defmodule KomplenWeb.RoomLive.Show do
   use KomplenWeb, :live_view
 
-  alias Komplen.Chat
+  alias Komplen.{Accounts, Chat}
   alias Komplen.Chat.Message
 
   @impl true
   def mount(_params, session, socket) do
     user_id = Map.get(session, "user_id")
-    {:ok, assign(socket, :user_id, user_id)}
+
+    {:ok,
+     socket
+     |> assign(:user_id, user_id)}
   end
 
   @impl true
@@ -59,4 +62,12 @@ defmodule KomplenWeb.RoomLive.Show do
   defp page_title(:edit), do: "Edit Room"
 
   defp topic(id), do: "room:#{id}"
+
+  def is_admin(user_id) do
+    # TODO: This is not really performant because you're doing a query per message
+    case Accounts.check_is_admin?(user_id) do
+      true -> "admin"
+      false -> nil
+    end
+  end
 end

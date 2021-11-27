@@ -207,6 +207,23 @@ defmodule Komplen.Accounts do
   end
 
   @doc """
+  Check if user is an admin
+
+  ## Examples
+
+      iex> check_is_admin?(1) 
+      true
+
+      iex> check_is_admin?(2) 
+      false
+
+  """
+  def check_is_admin?(user_id) do
+    query = from a in Admin, where: a.user_id == ^user_id
+    Repo.exists?(query)
+  end
+
+  @doc """
   Authenticate by username.
 
   ## Examples
