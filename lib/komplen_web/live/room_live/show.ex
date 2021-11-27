@@ -1,7 +1,7 @@
 defmodule KomplenWeb.RoomLive.Show do
   use KomplenWeb, :live_view
 
-  alias Komplen.{Accounts, Chat}
+  alias Komplen.Chat
   alias Komplen.Chat.Message
 
   @impl true
@@ -63,11 +63,10 @@ defmodule KomplenWeb.RoomLive.Show do
 
   defp topic(id), do: "room:#{id}"
 
-  def is_admin(user_id) do
-    # TODO: This is not really performant because you're doing a query per message
-    case Accounts.check_is_admin?(user_id) do
-      true -> "admin"
-      false -> nil
+  defp is_admin(admin) do
+    case admin do
+      nil -> nil
+      _ -> "admin"
     end
   end
 end

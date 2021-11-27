@@ -23,7 +23,7 @@
 <ul>
 <%= for message <- @room.messages do %>
   <li>
-    <span><%= message.inserted_at %>: <%= message.message %></span> by <%= content_tag :span, message.user.username, class: is_admin(message.user_id) %>
+    <span><%= message.inserted_at %>: <%= message.message %></span> by <%= content_tag :span, message.user.username, class: is_admin(message.user.admin) %>
   </li>
 <% end %>
 </ul>

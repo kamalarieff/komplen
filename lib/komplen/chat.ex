@@ -35,7 +35,7 @@ defmodule Komplen.Chat do
       ** (Ecto.NoResultsError)
 
   """
-  def get_room!(id), do: Repo.get!(Room, id) |> Repo.preload([messages: [:user]])
+  def get_room!(id), do: Repo.get!(Room, id) |> Repo.preload([messages: [user: [:admin]]])
 
   @doc """
   Creates a room.
@@ -131,7 +131,7 @@ defmodule Komplen.Chat do
       ** (Ecto.NoResultsError)
 
   """
-  def get_message!(id), do: Repo.get!(Message, id)
+  def get_message!(id), do: Repo.get!(Message, id) |> Repo.preload([user: [:admin]])
 
   @doc """
   Creates a message.
