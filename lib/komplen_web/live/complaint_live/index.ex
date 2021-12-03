@@ -68,6 +68,15 @@ defmodule KomplenWeb.ComplaintLive.Index do
     {:noreply, assign(socket, complaints: list_complaints())}
   end
 
+  @impl true
+  def handle_event("save-my-location", params, socket) do
+    %{"latlng" => %{"lat" => lat, "lng" => lng}} = params
+    {:noreply,
+     socket
+     |> assign(:lat, lat)
+     |> assign(:lng, lng)}
+  end
+
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Complaint")
@@ -76,10 +85,12 @@ defmodule KomplenWeb.ComplaintLive.Index do
 
   defp apply_action(socket, :new, _params) do
     user_id = socket.assigns.user_id
+    lat = socket.assigns.lat
+    lng = socket.assigns.lng
 
     socket
     |> assign(:page_title, "New Complaint")
-    |> assign(:complaint, %Complaint{user_id: user_id})
+    |> assign(:complaint, %Complaint{user_id: user_id, lat: lat, lng: lng})
   end
 
   defp apply_action(socket, :index, _params) do
