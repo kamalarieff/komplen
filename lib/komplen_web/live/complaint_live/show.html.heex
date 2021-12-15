@@ -10,7 +10,10 @@
     return_to: Routes.complaint_show_path(@socket, :show, @complaint) %>
 <% end %>
 
-<div id="map" style="height:560px" phx-hook="LeafletMap" data-lat={@complaint.lat} data-lng={@complaint.lng}></div>
+<leaflet-map phx-hook="LeafletMap" data-lat={@complaint.lat} data-lng={@complaint.lng} id="map">
+  <leaflet-marker phx-hook="LeafletMarker" data-lat={@complaint.lat} data-lng={@complaint.lng} id="marker">
+  </leaflet-marker>
+</leaflet-map>
 
 <ul>
   <li>
