@@ -85,12 +85,10 @@ defmodule KomplenWeb.ComplaintLive.Index do
 
   defp apply_action(socket, :new, _params) do
     user_id = socket.assigns.user_id
-    lat = socket.assigns.lat
-    lng = socket.assigns.lng
 
     socket
     |> assign(:page_title, "New Complaint")
-    |> assign(:complaint, %Complaint{user_id: user_id, lat: lat, lng: lng})
+    |> assign(:complaint, %Complaint{user_id: user_id})
   end
 
   defp apply_action(socket, :index, _params) do

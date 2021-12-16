@@ -10,10 +10,6 @@
     return_to: Routes.complaint_index_path(@socket, :index) %>
 <% end %>
 
-<%# find a way to only load this from within the component %>
-<%# actually, this is good as well. It can set up for showing complaints on a map %>
-<div id="insert-map" phx-hook="InsertMap"></div>
-
 <h2>Search</h2>
 <input type="text" placeholder="Search complaint" value={@search_term} phx-keyup="search" phx-debounce="500">
 
