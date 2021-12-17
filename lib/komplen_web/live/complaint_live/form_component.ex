@@ -30,9 +30,14 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
 
   @impl true
   def handle_event("save-my-location", %{"latlng" => %{"lat" => lat, "lng" => lng}}, socket) do
+    changeset =
+      socket.assigns.complaint
+      |> Complaints.change_complaint(%{lat: lat, lng: lng})
+
     {:noreply,
      socket
-     |> push_event("update-marker", %{lat: lat, lng: lng})}
+     |> push_event("update-marker", %{lat: lat, lng: lng})
+     |> assign(:changeset, changeset)}
   end
 
   @impl true
