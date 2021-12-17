@@ -5,6 +5,8 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
 
   # TODO: this is duplicated code. Try to find a better way
   @complaints_topic "complaints:*"
+  @default_lat 3.0482683245978155
+  @default_lng 101.58587425947192
 
   @impl true
   def update(%{complaint: complaint} = assigns, socket) do
@@ -27,6 +29,25 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
   end
 
   @impl true
+  def handle_event("save-my-location", %{"latlng" => %{"lat" => lat, "lng" => lng}}, socket) do
+    {:noreply,
+     socket
+     |> push_event("update-marker", %{lat: lat, lng: lng})}
+  end
+
+  @impl true
+  def handle_event("move-marker", %{"latlng" => %{"lat" => lat, "lng" => lng}}, socket) do
+    changeset =
+      socket.assigns.complaint
+      |> Complaints.change_complaint(%{lat: lat, lng: lng})
+
+    {:noreply,
+     socket
+     |> push_event("update-marker", %{lat: lat, lng: lng})
+     |> assign(:changeset, changeset)}
+  end
+
+  @impl true
   def handle_event("save", %{"complaint" => complaint_params}, socket) do
     save_complaint(socket, socket.assigns.action, complaint_params)
   end
@@ -36,6 +57,7 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
       {:ok, complaint} ->
         KomplenWeb.Endpoint.broadcast(@complaints_topic, "update", complaint)
         KomplenWeb.Endpoint.broadcast(topic(socket.assigns.complaint.id), "update", complaint)
+
         {:noreply,
          socket
          |> put_flash(:info, "Complaint updated successfully")
@@ -48,9 +70,11 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
 
   defp save_complaint(socket, :new, complaint_params) do
     user_id = socket.assigns.user_id
+
     case Complaints.create_complaint(Map.put(complaint_params, "user_id", user_id)) do
       {:ok, complaint} ->
         KomplenWeb.Endpoint.broadcast(@complaints_topic, "save", complaint)
+
         {:noreply,
          socket
          |> put_flash(:info, "Complaint created successfully")
@@ -62,4 +86,6 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
   end
 
   defp topic(id), do: "complaint:#{id}"
+  def default_lat, do: @default_lat
+  def default_lng, do: @default_lng
 end

@@ -10,6 +10,11 @@
     return_to: Routes.complaint_show_path(@socket, :show, @complaint) %>
 <% end %>
 
+<leaflet-map phx-hook="LeafletMap" data-lat={@complaint.lat} data-lng={@complaint.lng} id="complaint-#{@complaint.id}">
+  <leaflet-marker phx-hook="LeafletMarker" data-lat={@complaint.lat} data-lng={@complaint.lng} id="marker">
+  </leaflet-marker>
+</leaflet-map>
+
 <ul>
   <li>
     <strong>Title:</strong>
@@ -43,5 +48,7 @@ Status: <%= @complaint.status %>
   <button phx-click="add_vouch" phx-value-complaint_id={@complaint.id}>Vouch</button>
 <% end %>
 
+<%= unless is_nil(@complaint.room) do %>
 <%= link "Chatroom", to: Routes.room_show_path(@socket, :show, @complaint.room.id) %>
+<% end %>
 <span><%= live_redirect "Back", to: Routes.complaint_index_path(@socket, :index) %></span>

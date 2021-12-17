@@ -9,6 +9,8 @@ defmodule Komplen.Complaints.Complaint do
     field :body, :string
     field :title, :string
     field :status, :string
+    field :lat, :string
+    field :lng, :string
     belongs_to :user, User
     has_one :room, Room
 
@@ -18,7 +20,7 @@ defmodule Komplen.Complaints.Complaint do
   @doc false
   def changeset(complaint, attrs) do
     complaint
-    |> cast(attrs, [:title, :body, :status])
+    |> cast(attrs, [:title, :body, :status, :lat, :lng])
     |> validate_required([:title, :body, :user_id])
     |> check_constraint(:status, name: :allowed_status)
     |> assoc_constraint(:user)

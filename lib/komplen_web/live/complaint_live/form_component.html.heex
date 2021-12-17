@@ -1,6 +1,9 @@
 <div>
   <h2><%= @title %></h2>
-  <pre><%= inspect @changeset %></pre>
+  <leaflet-map phx-hook="LeafletInsertMap" data-lat={default_lat()} data-lng={default_lng()} id="complaint-new" phx-target={@myself}>
+    <leaflet-marker phx-hook="LeafletMarker" data-lat={default_lat()} data-lng={default_lng()} id="marker">
+    </leaflet-marker>
+  </leaflet-map>
 
   <.form
     let={f}
@@ -19,7 +22,9 @@
     <%= label f, :body %>
     <%= textarea f, :body %>
     <%= error_tag f, :body %>
-  
+
+    <%= hidden_input f, :lat %>
+    <%= hidden_input f, :lng %>
     <div>
       <%= submit "Save", phx_disable_with: "Saving..." %>
     </div>

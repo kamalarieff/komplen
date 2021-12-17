@@ -46,6 +46,8 @@ complaint =
   Komplen.Repo.insert!(%Complaint{
     body: "seed body",
     title: "seed title",
+    lat: "51.505",
+    lng: "-0.09",
     user_id: user1.id
   })
 
