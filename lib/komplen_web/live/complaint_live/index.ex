@@ -83,6 +83,11 @@ defmodule KomplenWeb.ComplaintLive.Index do
     |> assign(:complaint, Complaints.get_complaint!(id))
   end
 
+  defp apply_action(socket, :new, _params) when is_nil(socket.assigns.user_id) do
+    socket
+    |> redirect(to: Routes.session_path(socket, :new))
+  end
+
   defp apply_action(socket, :new, _params) do
     user_id = socket.assigns.user_id
 
