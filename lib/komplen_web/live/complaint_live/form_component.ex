@@ -1,7 +1,7 @@
 defmodule KomplenWeb.ComplaintLive.FormComponent do
   use KomplenWeb, :live_component
 
-  alias Komplen.Complaints
+  alias Komplen.{Complaints, Chat}
 
   # TODO: this is duplicated code. Try to find a better way
   @complaints_topic "complaints:*"
@@ -79,6 +79,7 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
     case Complaints.create_complaint(Map.put(complaint_params, "user_id", user_id)) do
       {:ok, complaint} ->
         KomplenWeb.Endpoint.broadcast(@complaints_topic, "save", complaint)
+        Chat.create_room(%{complaint_id: complaint.id})
 
         {:noreply,
          socket
