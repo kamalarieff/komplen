@@ -30,6 +30,12 @@
     <strong>Num vouches:</strong>
     <%= @num_vouches %>
   </li>
+
+  <%= for url <- @complaint.photo_urls do %>
+    <li>
+      <img src={url} height="300px">
+    </li>
+  <% end %>
 </ul>
 
 Status: <%= @complaint.status %>

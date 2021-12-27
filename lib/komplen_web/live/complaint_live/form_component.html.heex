@@ -25,6 +25,40 @@
 
     <%= hidden_input f, :lat %>
     <%= hidden_input f, :lng %>
+
+    <%# Phoenix.LiveView.Helpers.upload_errors/2 returns a list of error atoms %>
+    <%= for {_ref, msg} <- @uploads.avatar.errors do %>
+      <p><%= Phoenix.Naming.humanize(msg) %></p>
+    <% end %>
+
+    <%= for url <- @uploaded_files do %>
+      <div>
+        <img src={url} height="300px">
+        <button type="button" phx-click="remove-uploaded" phx-value-url={url} phx-target={@myself}>remove</button>
+      </div>
+    <% end %>
+
+    <%= live_file_input @uploads.avatar %>
+    <%= for entry <- @uploads.avatar.entries do %>
+      <article>
+        <figure>
+          <%# Phoenix.LiveView.Helpers.live_img_preview/2 renders a client-side preview %>
+          <%= live_img_preview entry, height: 120 %>
+          <figcaption><%= entry.client_name %></figcaption>
+        </figure>
+
+        <%# entry.progress will update automatically for in-flight entries %>
+        <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
+
+        <button type="button" phx-click="cancel-upload" phx-value-ref={entry.ref} phx-target={@myself} aria-label="cancel">&times;</button>
+
+        <%# Phoenix.LiveView.Helpers.upload_errors/2 returns a list of error atoms %>
+        <%= for err <- upload_errors(@uploads.avatar, entry) do %>
+          <p><%= error_to_string(err) %></p>
+        <% end %>
+
+      </article>
+    <% end %>
     <div>
       <%= submit "Save", phx_disable_with: "Saving..." %>
     </div>

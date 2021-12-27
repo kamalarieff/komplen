@@ -11,6 +11,7 @@ defmodule Komplen.Complaints.Complaint do
     field :status, :string
     field :lat, :string
     field :lng, :string
+    field :photo_urls, {:array, :string}, default: []
     belongs_to :user, User
     has_one :room, Room
 
@@ -20,7 +21,7 @@ defmodule Komplen.Complaints.Complaint do
   @doc false
   def changeset(complaint, attrs) do
     complaint
-    |> cast(attrs, [:title, :body, :status, :lat, :lng])
+    |> cast(attrs, [:title, :body, :status, :lat, :lng, :photo_urls])
     |> validate_required([:title, :body, :user_id])
     |> check_constraint(:status, name: :allowed_status)
     |> assoc_constraint(:user)

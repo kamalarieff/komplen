@@ -9,13 +9,21 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
   @default_lng 101.58587425947192
 
   @impl true
+  def mount(socket) do
+    {:ok,
+     socket
+     |> allow_upload(:avatar, accept: ~w(.jpg .jpeg .png), max_entries: 2)}
+  end
+
+  @impl true
   def update(%{complaint: complaint} = assigns, socket) do
     changeset = Complaints.change_complaint(complaint)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:changeset, changeset)}
+     |> assign(:changeset, changeset)
+     |> assign(:uploaded_files, complaint.photo_urls)}
   end
 
   @impl true
@@ -54,7 +62,53 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
 
   @impl true
   def handle_event("save", %{"complaint" => complaint_params}, socket) do
+    uploaded_files =
+      case uploaded_entries(socket, :avatar) do
+        {entries, []} ->
+          for entry <- entries do
+            consume_uploaded_entry(socket, entry, fn %{path: path} ->
+              dest =
+                Path.join([
+                  :code.priv_dir(:komplen),
+                  "static",
+                  "uploads",
+                  Path.basename(path) <> ".#{ext(entry)}"
+                ])
+
+              File.cp!(path, dest)
+              Routes.static_path(socket, "/uploads/#{Path.basename(dest)}")
+            end)
+          end
+
+        _ ->
+          []
+      end
+
+    complaint_params =
+      complaint_params
+      |> Map.put("photo_urls", socket.assigns.uploaded_files ++ uploaded_files)
+
     save_complaint(socket, socket.assigns.action, complaint_params)
+  end
+
+  @impl true
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :avatar, ref)}
+  end
+
+  @impl true
+  def handle_event("remove-uploaded", %{"url" => url}, socket) do
+    path = Path.join([:code.priv_dir(:komplen), "static", url])
+    File.rm!(path)
+    {:noreply,
+     update(socket, :uploaded_files, fn uploaded_files ->
+       Enum.reject(uploaded_files, &(&1 == url))
+     end)}
+  end
+
+  defp ext(entry) do
+    [ext | _] = MIME.extensions(entry.client_type)
+    ext
   end
 
   defp save_complaint(socket, :edit, complaint_params) do
@@ -94,4 +148,8 @@ defmodule KomplenWeb.ComplaintLive.FormComponent do
   defp topic(id), do: "complaint:#{id}"
   def default_lat, do: @default_lat
   def default_lng, do: @default_lng
+
+  def error_to_string(:too_large), do: "Too large"
+  def error_to_string(:too_many_files), do: "You have selected too many files"
+  def error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
 end
