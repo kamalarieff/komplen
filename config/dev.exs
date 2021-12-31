@@ -58,7 +58,7 @@ config :komplen, KomplenWeb.Endpoint,
 config :komplen, KomplenWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/[^uploads].*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/komplen_web/(live|views)/.*(ex)$",
       ~r"lib/komplen_web/templates/.*(eex)$"
