@@ -41,32 +41,33 @@ defmodule KomplenWeb.ComplaintLive.Show do
   end
 
   @impl true
+  def handle_event("add_vouch", _, socket)
+      when is_nil(socket.assigns.user_id) do
+    {:noreply,
+     socket
+     |> put_flash(:error, "You must login to continue")
+     |> redirect(to: Routes.session_path(socket, :new))}
+  end
+
+  @impl true
   def handle_event("add_vouch", %{"complaint_id" => complaint_id}, socket) do
     complaint_topic = topic(complaint_id)
 
-    case is_nil(socket.assigns.user_id) do
-      true ->
+    profile = Accounts.get_profile(%{user_id: socket.assigns.user_id})
+
+    case profile do
+      nil ->
         {:noreply,
          socket
-         |> redirect(to: Routes.session_path(socket, :new))}
+         |> put_flash(:error, "You must fill up your profile")
+         |> redirect(to: Routes.profile_path(socket, :edit))}
 
       _ ->
-        profile = Accounts.get_profile(%{user_id: socket.assigns.user_id})
+        {:ok, vouch} =
+          Complaints.add_vouch(%{user_id: socket.assigns.user_id, complaint_id: complaint_id})
 
-        case profile do
-          nil ->
-            {:noreply,
-             socket
-             |> put_flash(:error, "You must fill up your profile")
-             |> redirect(to: Routes.profile_path(socket, :edit))}
-
-          _ ->
-            {:ok, vouch} =
-              Complaints.add_vouch(%{user_id: socket.assigns.user_id, complaint_id: complaint_id})
-
-            KomplenWeb.Endpoint.broadcast(complaint_topic, "add_vouch", nil)
-            {:noreply, assign(socket, :vouch_id, vouch.id)}
-        end
+        KomplenWeb.Endpoint.broadcast(complaint_topic, "add_vouch", nil)
+        {:noreply, assign(socket, :vouch_id, vouch.id)}
     end
   end
 
