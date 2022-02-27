@@ -1,28 +1,28 @@
 <div x-data="{ loginType: 'user' }">
-    <h1>Login as <span x-text="loginType"></span></h1>
-    <button @click="loginType = 'user'">Login as user</button>
-    <button @click="loginType = 'admin'">Login as admin</button>
+    <h1>Login as <span x-text="loginType">user</span></h1>
+    <button @click="loginType = 'user'" class="btn btn-info">Login as user</button>
+    <button @click="loginType = 'admin'" class="btn btn-info">Login as admin</button>
  
-    <div x-show="loginType == 'user'">
+    <div x-show="loginType == 'user'" x-transition>
       <%= form_for @conn, Routes.session_path(@conn, :create), [method: :post, as: :user], fn f -> %>
         <div class="form-group">
           <%= text_input f, :name, placeholder: "Username" %>
         </div>
       
         <div class="form-group">
-          <%= submit "Login" %>
+          <%= submit "Login", class: "btn" %>
         </div>
       <% end %>
     </div>
 
-    <div x-show="loginType == 'admin'">
+    <div x-show="loginType == 'admin'" x-transition>
       <%= form_for @conn, Routes.session_path(@conn, :create), [method: :post, as: :admin], fn f -> %>
         <div class="form-group">
           <%= text_input f, :name, placeholder: "Username" %>
         </div>
       
         <div class="form-group">
-          <%= submit "Login" %>
+          <%= submit "Login", class: "btn" %>
         </div>
       <% end %>
     </div>
