@@ -17,7 +17,10 @@ import "phoenix_html";
 // assets/js/app.js
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
+import Alpine from 'alpinejs'
 import L from "leaflet";
+
+Alpine.start();
 
 // let geojsonFeature = {
 //     "type": "Feature",
